@@ -63,7 +63,7 @@ Run the following command to execute unit tests:
 go test ./... -v -cover
 ```
 
-## 🏗️️ Build
+## 🏗️ Build
 
 To build the application for production:
 
