@@ -29,6 +29,9 @@ jobs:
           cache-dependency-path: |
             **/go.sum
 
+      - name: Install UPX
+        run: sudo apt-get update && sudo apt-get install -y upx
+
       - name: Install Dependencies
         run: go mod tidy
 
@@ -44,6 +47,7 @@ jobs:
       - name: Build
         run: |
           CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -ldflags="-s -w" -o main ./cmd/app/main.go
+          upx --best --lzma main
 
       - name: Build Docker Image
         run: |
