@@ -46,8 +46,8 @@ jobs:
 
       - name: Build
         run: |
-          CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -ldflags="-s -w" -o main ./cmd/app/main.go
-          upx --best --lzma main
+          CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -ldflags="-s -w -extldflags '-static'" -o main ./cmd/app/main.go
+          upx --ultra-brute --lzma main
 
       - name: Build Docker Image
         run: |

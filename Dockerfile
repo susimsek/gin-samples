@@ -9,3 +9,4 @@ COPY main .
 
 # Command to run the application
 ENTRYPOINT ["./main"]
+a
