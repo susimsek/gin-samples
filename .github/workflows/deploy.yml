@@ -35,6 +35,7 @@ jobs:
       - name: Install DockerSlim
         run: |
           curl -sL https://downloads.dockerslim.com/install.sh | sudo bash
+          export PATH=$PATH:$HOME/.docker-slim/bin
 
       - name: Install Dependencies
         run: go mod tidy
@@ -60,7 +61,7 @@ jobs:
 
       - name: Slim Docker Image
         run: |
-          docker-slim build --tag docker.io/${{ secrets.DOCKER_USERNAME }}/gin-app-slim:${{ github.ref_name }} docker.io/${{ secrets.DOCKER_USERNAME }}/gin-app:${{ github.ref_name }}
+          $HOME/.docker-slim/bin/docker-slim build --tag docker.io/${{ secrets.DOCKER_USERNAME }}/gin-app-slim:${{ github.ref_name }} docker.io/${{ secrets.DOCKER_USERNAME }}/gin-app:${{ github.ref_name }}
 
       - name: Push Slimmed Docker Image
         run: |
