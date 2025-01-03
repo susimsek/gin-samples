@@ -6,5 +6,9 @@ import (
 
 func main() {
 	container := di.NewContainer()
-	container.Router.Run(":8080")
+	run(":8080", container)
+}
+
+func run(addr string, container *di.Container) {
+	container.Router.Run(addr)
 }
