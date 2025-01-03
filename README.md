@@ -14,7 +14,7 @@ Explore high performance, easy-to-use routing, and flexible middleware with Gin.
 - 🐳 [Docker](#-docker)
 - 🛠️ [Used Technologies](#️-used-technologies)
 
-## 📚 Features
+## 📖 Features
 
 - 🚀 **High Performance**: Built for speed and efficiency.
 - 🌐 **Simple Routing**: Define routes with minimal code.
