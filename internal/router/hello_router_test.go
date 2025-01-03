@@ -1,20 +1,19 @@
 package router_test
 
 import (
+	"gin-samples/internal/mock"
 	"gin-samples/internal/router"
+	"github.com/gin-gonic/gin"
+	"github.com/stretchr/testify/assert"
 	"net/http"
 	"net/http/httptest"
 	"testing"
-
-	"gin-samples/testutils"
-	"github.com/gin-gonic/gin"
-	"github.com/stretchr/testify/assert"
 )
 
 func TestAddHelloRoutes(t *testing.T) {
 	gin.SetMode(gin.TestMode)
 
-	mockController := &testutils.MockHelloController{}
+	mockController := &mock.MockHelloController{}
 
 	r := gin.Default()
 

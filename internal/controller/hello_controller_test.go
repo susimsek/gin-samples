@@ -1,7 +1,7 @@
 package controller
 
 import (
-	"gin-samples/testutils"
+	"gin-samples/internal/model"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -10,10 +10,16 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
+type MockHelloService struct{}
+
+func (m *MockHelloService) GetGreeting() model.Greeting {
+	return model.Greeting{Message: "Mock Hello"}
+}
+
 func TestHelloController(t *testing.T) {
 	gin.SetMode(gin.TestMode)
 
-	mockService := &testutils.MockHelloService{}
+	mockService := &MockHelloService{}
 	controller := NewHelloController(mockService)
 
 	router := gin.Default()

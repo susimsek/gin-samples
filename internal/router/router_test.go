@@ -1,8 +1,8 @@
 package router_test
 
 import (
+	"gin-samples/internal/mock"
 	"gin-samples/internal/router"
-	"gin-samples/testutils"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -14,7 +14,7 @@ import (
 func TestSetupRouter(t *testing.T) {
 	gin.SetMode(gin.TestMode)
 
-	mockController := &testutils.MockHelloController{}
+	mockController := &mock.MockHelloController{}
 
 	r := router.SetupRouter(mockController)
 
