@@ -1,13 +1,19 @@
+// main.go
 package main
 
 import (
 	"github.com/gin-gonic/gin"
 )
 
-func main() {
+func SetupRouter() *gin.Engine {
 	r := gin.Default()
 	r.GET("/hello", func(c *gin.Context) {
 		c.String(200, "Hello, World!")
 	})
-	r.Run(":8080")
+	return r
+}
+
+func main() {
+	router := SetupRouter()
+	router.Run(":8080")
 }

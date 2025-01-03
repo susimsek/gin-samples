@@ -14,7 +14,7 @@ RUN go mod download
 COPY . .
 
 # Build the application with static linking and optimizations
-RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -ldflags="-s -w" -o main . && \
+RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -ldflags="-s -w" -o main ./cmd/app/main.go && \
     upx --best --lzma main
 
 # Stage 2: Minimal Image

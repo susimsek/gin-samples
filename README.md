@@ -43,13 +43,15 @@ go run main.go
 To test the application:
 
 ```bash
-curl http://localhost:8080/hello
+curl -X GET http://localhost:8080/api/hello
 ```
 
 Expected response:
 
-```text
-Hello, World!
+```json
+{
+  "message": "Hello, World!"
+}
 ```
 
 ## 🏗️ Build
