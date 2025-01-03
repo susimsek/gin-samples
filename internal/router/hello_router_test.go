@@ -1,31 +1,32 @@
 package router_test
 
 import (
+	"gin-samples/internal/router"
 	"net/http"
 	"net/http/httptest"
 	"testing"
 
-	"gin-samples/internal/controller"
-	"gin-samples/internal/service"
+	"gin-samples/testutils"
 	"github.com/gin-gonic/gin"
 	"github.com/stretchr/testify/assert"
 )
 
-func TestHelloRoutes(t *testing.T) {
+func TestAddHelloRoutes(t *testing.T) {
 	gin.SetMode(gin.TestMode)
+
+	mockController := &testutils.MockHelloController{}
+
 	r := gin.Default()
 
-	helloService := service.NewHelloService()
-	helloController := controller.NewHelloController(helloService)
-	r.GET("/api/hello", helloController.Hello)
+	router.AddHelloRoutes(r, mockController)
 
-	req, _ := http.NewRequest("GET", "/api/hello", nil)
+	req, _ := http.NewRequest(http.MethodGet, "/api/hello", nil)
 	w := httptest.NewRecorder()
 
 	r.ServeHTTP(w, req)
 
-	assert.Equal(t, http.StatusOK, w.Code, "Expected status code 200")
+	assert.Equal(t, http.StatusOK, w.Code)
 
-	expectedResponse := `{"message":"Hello, World!"}`
-	assert.JSONEq(t, expectedResponse, w.Body.String(), "Expected response body to match")
+	expectedResponse := `{"message":"Mocked Hello, World!"}`
+	assert.JSONEq(t, expectedResponse, w.Body.String())
 }

@@ -2,13 +2,10 @@ package router
 
 import (
 	"gin-samples/internal/controller"
-	"gin-samples/internal/service"
+
 	"github.com/gin-gonic/gin"
 )
 
-func HelloRoutes(r *gin.Engine) {
-	helloService := service.NewHelloService()
-	helloController := controller.NewHelloController(helloService)
-
+func AddHelloRoutes(r *gin.Engine, helloController controller.HelloController) {
 	r.GET("/api/hello", helloController.Hello)
 }

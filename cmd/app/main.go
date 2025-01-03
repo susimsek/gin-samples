@@ -1,10 +1,10 @@
 package main
 
 import (
-	"gin-samples/internal/router"
+	"gin-samples/internal/di"
 )
 
 func main() {
-	r := router.SetupRouter()
-	r.Run(":8080")
+	container := di.NewContainer()
+	container.Router.Run(":8080")
 }
