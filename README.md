@@ -21,7 +21,7 @@ Explore high performance, easy-to-use routing, and flexible middleware with Gin.
 - 🔌 **Middleware Support**: Easily add middleware to your application.
 - 🤪 **Extensible**: Add your own routes and features.
 
-## 🤛‍💻 Development Setup
+## 🧑‍💻 Development Setup
 
 To clone and run this application locally:
 
@@ -36,10 +36,10 @@ cd gin-samples
 go mod tidy
 
 # Start the application
-go run main.go
+go run cmd/app/main.go
 ```
 
-## 🤪 Testing
+## 🧪 Testing
 
 To test the application:
 
@@ -63,7 +63,7 @@ Run the following command to execute unit tests:
 go test ./... -v -cover
 ```
 
-## 🏷️ Build
+## 🏗️️ Build
 
 To build the application for production:
 
