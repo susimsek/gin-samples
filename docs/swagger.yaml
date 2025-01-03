@@ -1,0 +1,43 @@
+basePath: /
+definitions:
+  model.Greeting:
+    properties:
+      message:
+        description: Message is the greeting text
+        example: Hello, World!
+        maxLength: 100
+        minLength: 1
+        type: string
+    required:
+    - message
+    type: object
+host: localhost:8080
+info:
+  contact:
+    email: support@example.com
+    name: API Support
+    url: http://example.com/contact
+  description: This is a sample server for Gin application.
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
+  termsOfService: http://example.com/terms/
+  title: Gin Samples API
+  version: "1.0"
+paths:
+  /api/hello:
+    get:
+      consumes:
+      - application/json
+      description: Returns a greeting message
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.Greeting'
+      summary: Get a greeting message
+      tags:
+      - hello
+swagger: "2.0"
