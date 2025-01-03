@@ -1,10 +1,10 @@
 package main
 
 import (
-	"gin-samples/routes"
+	"gin-samples/internal/router"
 )
 
 func main() {
-	r := routes.SetupRouter()
+	r := router.SetupRouter()
 	r.Run(":8080")
 }
