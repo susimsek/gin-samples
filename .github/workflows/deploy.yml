@@ -37,6 +37,7 @@ jobs:
           curl -L https://github.com/slimtoolkit/slim/releases/download/1.40.11/dist_linux.tar.gz -o dist_linux.tar.gz
           tar -xzvf dist_linux.tar.gz
           sudo cp dist_linux/slim /usr/local/bin/
+          sudo cp dist_linux/slim-sensor /usr/local/bin/
 
       - name: Install Dependencies
         run: go mod tidy
