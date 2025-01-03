@@ -1,9 +1,25 @@
 basePath: /
 definitions:
   model.Greeting:
+    description: Greeting model
     properties:
       message:
         description: Message is the greeting text
+        example: Hello, World!
+        maxLength: 100
+        minLength: 1
+        type: string
+    required:
+    - message
+    type: object
+  model.GreetingInput:
+    description: Input model for creating a new greeting
+    properties:
+      message:
+        description: |-
+          Message is the greeting text to be created
+          required: true
+          example: Hello, POST!
         example: Hello, World!
         maxLength: 100
         minLength: 1
@@ -38,6 +54,27 @@ paths:
           schema:
             $ref: '#/definitions/model.Greeting'
       summary: Get a greeting message
+      tags:
+      - hello
+    post:
+      consumes:
+      - application/json
+      description: Creates a new greeting
+      parameters:
+      - description: Greeting Input
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/model.GreetingInput'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/model.Greeting'
+      summary: Create a new greeting message
       tags:
       - hello
 swagger: "2.0"

@@ -1,6 +1,7 @@
 package router_test
 
 import (
+	"bytes"
 	"gin-samples/internal/mock"
 	"gin-samples/internal/router"
 	"github.com/gin-gonic/gin"
@@ -27,5 +28,29 @@ func TestAddHelloRoutes(t *testing.T) {
 	assert.Equal(t, http.StatusOK, w.Code)
 
 	expectedResponse := `{"message":"Mocked Hello, World!"}`
+	assert.JSONEq(t, expectedResponse, w.Body.String())
+}
+
+func TestAddHelloRoutes_CreateGreeting(t *testing.T) {
+	gin.SetMode(gin.TestMode)
+
+	mockController := &mock.MockHelloController{}
+
+	r := gin.Default()
+
+	router.AddHelloRoutes(r, mockController)
+
+	// Mocked Request Body
+	body := []byte(`{"message":"Mocked POST Greeting!"}`)
+	req, _ := http.NewRequest(http.MethodPost, "/api/hello", bytes.NewBuffer(body))
+	req.Header.Set("Content-Type", "application/json")
+
+	w := httptest.NewRecorder()
+
+	r.ServeHTTP(w, req)
+
+	assert.Equal(t, http.StatusCreated, w.Code)
+
+	expectedResponse := `{"message":"Mocked POST Greeting!"}`
 	assert.JSONEq(t, expectedResponse, w.Body.String())
 }

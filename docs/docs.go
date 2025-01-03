@@ -45,11 +45,44 @@ const docTemplate = `{
                         }
                     }
                 }
+            },
+            "post": {
+                "description": "Creates a new greeting",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "hello"
+                ],
+                "summary": "Create a new greeting message",
+                "parameters": [
+                    {
+                        "description": "Greeting Input",
+                        "name": "input",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/model.GreetingInput"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/model.Greeting"
+                        }
+                    }
+                }
             }
         }
     },
     "definitions": {
         "model.Greeting": {
+            "description": "Greeting model",
             "type": "object",
             "required": [
                 "message"
@@ -57,6 +90,22 @@ const docTemplate = `{
             "properties": {
                 "message": {
                     "description": "Message is the greeting text",
+                    "type": "string",
+                    "maxLength": 100,
+                    "minLength": 1,
+                    "example": "Hello, World!"
+                }
+            }
+        },
+        "model.GreetingInput": {
+            "description": "Input model for creating a new greeting",
+            "type": "object",
+            "required": [
+                "message"
+            ],
+            "properties": {
+                "message": {
+                    "description": "Message is the greeting text to be created\nrequired: true\nexample: Hello, POST!",
                     "type": "string",
                     "maxLength": 100,
                     "minLength": 1,
