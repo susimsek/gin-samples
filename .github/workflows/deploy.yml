@@ -33,9 +33,7 @@ jobs:
         run: go mod tidy
 
       - name: Run Tests
-        run: |
-          mkdir -p coverage
-          go test ./... -v -coverprofile=coverage/coverage.out -json > coverage/test-report.json
+        run:  go test ./... -v -coverprofile=coverage.out
 
       - name: SonarQube Scan
         uses: sonarsource/sonarqube-scan-action@v2
