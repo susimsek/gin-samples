@@ -11,7 +11,5 @@ type Greeting struct {
 // @Description Input model for creating a new greeting
 type GreetingInput struct {
 	// Message is the greeting text to be created
-	// required: true
-	// example: Hello, POST!
-	Message string `json:"message" example:"Hello, World!" minLength:"1" maxLength:"100" validate:"required"`
+	Message string `json:"message" example:"Hello, World!" minLength:"1" maxLength:"100" validate:"required,min=1,max=100"`
 }

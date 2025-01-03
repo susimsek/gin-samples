@@ -16,10 +16,7 @@ definitions:
     description: Input model for creating a new greeting
     properties:
       message:
-        description: |-
-          Message is the greeting text to be created
-          required: true
-          example: Hello, POST!
+        description: Message is the greeting text to be created
         example: Hello, World!
         maxLength: 100
         minLength: 1

@@ -105,7 +105,7 @@ const docTemplate = `{
             ],
             "properties": {
                 "message": {
-                    "description": "Message is the greeting text to be created\nrequired: true\nexample: Hello, POST!",
+                    "description": "Message is the greeting text to be created",
                     "type": "string",
                     "maxLength": 100,
                     "minLength": 1,
