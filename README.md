@@ -11,16 +11,17 @@ Explore high performance, easy-to-use routing, and flexible middleware with Gin.
 - 🧪 [Testing](#-testing)
 - 🏗️ [Build](#️-build)
 - 🛡️ [Code Quality](#️-code-quality)
+- 🐳 [Docker](#️-docker)
 - 🛠️ [Used Technologies](#️-used-technologies)
 
-## 📖 Features
+## 📚 Features
 
 - 🚀 **High Performance**: Built for speed and efficiency.
 - 🌐 **Simple Routing**: Define routes with minimal code.
 - 🔌 **Middleware Support**: Easily add middleware to your application.
-- 🧪 **Extensible**: Add your own routes and features.
+- 🤪 **Extensible**: Add your own routes and features.
 
-## 🧑‍💻 Development Setup
+## 🤛‍💻 Development Setup
 
 To clone and run this application locally:
 
@@ -38,7 +39,7 @@ go mod tidy
 go run main.go
 ```
 
-## 🧪 Testing
+## 🤪 Testing
 
 To test the application:
 
@@ -54,7 +55,15 @@ Expected response:
 }
 ```
 
-## 🏗️ Build
+### Running Unit Tests
+
+Run the following command to execute unit tests:
+
+```bash
+go test ./... -v -cover
+```
+
+## 🏷️ Build
 
 To build the application for production:
 
@@ -70,6 +79,24 @@ To assess code quality locally using SonarQube, execute:
 sonar-scanner
 ```
 
+## 🐳 Docker
+
+To build and run the application using Docker:
+
+### Build Docker Image
+
+```bash
+docker build -t gin-samples .
+```
+
+### Run Docker Container
+
+```bash
+docker run -d -p 8080:8080 gin-samples
+```
+
+The application will be available at `http://localhost:8080`.
+
 ## 🛠️ Used Technologies
 
 ![Go](https://img.shields.io/badge/Go-1.23-blue?logo=go&logoColor=white)  
@@ -80,4 +107,3 @@ sonar-scanner
 ---
 
 This project is an excellent starting point for building web applications with the Gin framework!
-
