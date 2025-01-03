@@ -1,4 +1,4 @@
-name: Build, Test, and Publish Application
+name: Build, Test, Slim, and Publish Application
 
 on:
   workflow_dispatch:
@@ -32,11 +32,15 @@ jobs:
       - name: Install UPX
         run: sudo apt-get update && sudo apt-get install -y upx
 
+      - name: Install DockerSlim
+        run: |
+          curl -sL https://raw.githubusercontent.com/docker-slim/docker-slim/master/scripts/install-docker-slim.sh | sudo bash
+
       - name: Install Dependencies
         run: go mod tidy
 
       - name: Run Tests
-        run:  go test ./... -v -coverprofile=coverage.out
+        run: go test ./... -v -coverprofile=coverage.out
 
       - name: SonarQube Scan
         uses: sonarsource/sonarqube-scan-action@v2
@@ -53,4 +57,11 @@ jobs:
         run: |
           docker build -t docker.io/${{ secrets.DOCKER_USERNAME }}/gin-app:${{ github.ref_name }} .
           echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
-          docker push docker.io/${{ secrets.DOCKER_USERNAME }}/gin-app:${{ github.ref_name }}
+
+      - name: Slim Docker Image
+        run: |
+          docker-slim build --tag docker.io/${{ secrets.DOCKER_USERNAME }}/gin-app-slim:${{ github.ref_name }} docker.io/${{ secrets.DOCKER_USERNAME }}/gin-app:${{ github.ref_name }}
+
+      - name: Push Slimmed Docker Image
+        run: |
+          docker push docker.io/${{ secrets.DOCKER_USERNAME }}/gin-app-slim:${{ github.ref_name }}
