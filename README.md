@@ -18,7 +18,7 @@ Explore high performance, easy-to-use routing, and flexible middleware with Gin.
 - 🏗️ [Build](#️-build)
 - 🕵️‍♂️ [Code Analysis](#️-code-analysis)
 - 🛡️ [Code Quality](#️-code-quality)
-- 📜 [API Documentation](#️-api-documentation)
+- 📜 [API Documentation](#-api-documentation)
 - 🐳 [Docker](#-docker)
 - 🛠️ [Used Technologies](#️-used-technologies)
 
