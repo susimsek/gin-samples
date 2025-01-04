@@ -1,6 +1,7 @@
 package main
 
 import (
+	"gin-samples/config"
 	_ "gin-samples/docs"
 	"gin-samples/internal/di"
 	"log"
@@ -21,8 +22,9 @@ import (
 // @host localhost:8080
 // @BasePath /
 func main() {
+	cfg := config.LoadConfig()
 	container := di.NewContainer()
-	run(":8080", container)
+	run(":"+cfg.ServerPort, container)
 }
 
 func run(addr string, container *di.Container) {
