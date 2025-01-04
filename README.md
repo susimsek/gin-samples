@@ -18,6 +18,7 @@ Explore high performance, easy-to-use routing, and flexible middleware with Gin.
 - 🏗️ [Build](#️-build)
 - 🕵️‍♂️ [Code Analysis](#️-code-analysis)
 - 🛡️ [Code Quality](#️-code-quality)
+- 📜 [API Documentation](#️-api-documentation)
 - 🐳 [Docker](#-docker)
 - 🛠️ [Used Technologies](#️-used-technologies)
 
@@ -129,6 +130,14 @@ To assess code quality locally using SonarQube, execute:
 
 ```bash
 sonar-scanner
+```
+
+## 📜 API Documentation
+
+To view the API documentation, access the Swagger UI at:
+
+```plaintext
+http://localhost:8080/swagger/index.html
 ```
 
 ## 🐳 Docker
