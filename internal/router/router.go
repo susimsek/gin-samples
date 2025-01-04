@@ -14,7 +14,7 @@ func SetupRouter(helloController controller.HelloController,
 	healthController controller.HealthController,
 	trans ut.Translator) *gin.Engine {
 	r := gin.Default()
-	r.StaticFile("/favicon.ico", "./static/favicons/favicon.ico")
+	r.StaticFile("/favicon.ico", "./resources/favicons/favicon.ico")
 	r.Use(middleware.ErrorHandlingMiddleware(trans))
 
 	// Add Hello routes

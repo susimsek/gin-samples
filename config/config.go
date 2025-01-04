@@ -1,8 +1,11 @@
 package config
 
 import (
-	"github.com/joho/godotenv"
+	"log"
 	"os"
+	"path/filepath"
+
+	"github.com/joho/godotenv"
 )
 
 type Config struct {
@@ -15,10 +18,12 @@ func LoadConfig() *Config {
 		env = "dev"
 	}
 
-	_ = godotenv.Load(".env")
+	commonEnvPath := filepath.Join("resources", "config", ".env")
+	envFilePath := filepath.Join("resources", "config", ".env."+env)
 
-	envFile := ".env." + env
-	_ = godotenv.Load(envFile)
+	if err := godotenv.Overload(commonEnvPath, envFilePath); err != nil {
+		log.Printf("Error loading .env files: %v", err)
+	}
 
 	return &Config{
 		ServerPort: getEnv("SERVER_PORT", "8080"),
