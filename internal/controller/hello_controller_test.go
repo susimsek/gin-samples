@@ -4,37 +4,40 @@ import (
 	"bytes"
 	"gin-samples/internal/model"
 	"github.com/gin-gonic/gin"
-	en "github.com/go-playground/locales/en"
-	ut "github.com/go-playground/universal-translator"
 	"github.com/go-playground/validator/v10"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/mock"
 	"net/http"
 	"net/http/httptest"
 	"testing"
 )
 
 // MockHelloService simulates the HelloService
-type MockHelloService struct{}
+type MockHelloService struct {
+	mock.Mock
+}
 
 func (m *MockHelloService) GetGreeting() model.Greeting {
-	return model.Greeting{Message: "Mock Hello"}
+	args := m.Called()
+	return args.Get(0).(model.Greeting)
 }
 
 func (m *MockHelloService) CreateGreeting(input model.GreetingInput) (model.Greeting, error) {
-	return model.Greeting(input), nil
+	args := m.Called(input)
+	return args.Get(0).(model.Greeting), args.Error(1)
 }
 
 func (m *MockHelloService) GetAllGreetings() []model.Greeting {
-	return []model.Greeting{
-		{Message: "Mock Hello"},
-		{Message: "Mock Hi"},
-	}
+	args := m.Called()
+	return args.Get(0).([]model.Greeting)
 }
 
 func TestHelloController_Hello(t *testing.T) {
 	gin.SetMode(gin.TestMode)
 
-	mockService := &MockHelloService{}
+	mockService := new(MockHelloService)
+	mockService.On("GetGreeting").Return(model.Greeting{Message: "Mock Hello"})
+
 	controller := NewHelloController(mockService, nil, nil)
 
 	router := gin.Default()
@@ -47,19 +50,19 @@ func TestHelloController_Hello(t *testing.T) {
 
 	assert.Equal(t, http.StatusOK, w.Code)
 	assert.JSONEq(t, `{"message": "Mock Hello"}`, w.Body.String())
+
+	mockService.AssertExpectations(t)
 }
 
 func TestHelloController_CreateGreeting(t *testing.T) {
 	gin.SetMode(gin.TestMode)
 
-	// Mock Validator ve Translator
-	validate := validator.New()
-	translator := en.New()
-	uni := ut.New(translator, translator)
-	trans, _ := uni.GetTranslator("en")
+	mockService := new(MockHelloService)
+	mockService.On("CreateGreeting", model.GreetingInput{Message: "Hello, Test!"}).
+		Return(model.Greeting{Message: "Hello, Test!"}, nil)
 
-	mockService := &MockHelloService{}
-	controller := NewHelloController(mockService, validate, trans)
+	validate := validator.New()
+	controller := NewHelloController(mockService, validate, nil)
 
 	router := gin.Default()
 	router.POST("/api/hello", controller.CreateGreeting)
@@ -73,12 +76,19 @@ func TestHelloController_CreateGreeting(t *testing.T) {
 
 	assert.Equal(t, http.StatusCreated, w.Code)
 	assert.JSONEq(t, `{"message": "Hello, Test!"}`, w.Body.String())
+
+	mockService.AssertExpectations(t)
 }
 
 func TestHelloController_GetAllGreetings(t *testing.T) {
 	gin.SetMode(gin.TestMode)
 
-	mockService := &MockHelloService{}
+	mockService := new(MockHelloService)
+	mockService.On("GetAllGreetings").Return([]model.Greeting{
+		{Message: "Mock Hello"},
+		{Message: "Mock Hi"},
+	})
+
 	controller := NewHelloController(mockService, nil, nil)
 
 	router := gin.Default()
@@ -91,4 +101,6 @@ func TestHelloController_GetAllGreetings(t *testing.T) {
 	assert.Equal(t, http.StatusOK, w.Code)
 	expectedResponse := `[{"message": "Mock Hello"}, {"message": "Mock Hi"}]`
 	assert.JSONEq(t, expectedResponse, w.Body.String())
+
+	mockService.AssertExpectations(t)
 }
