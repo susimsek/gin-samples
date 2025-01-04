@@ -13,6 +13,7 @@ Explore high performance, easy-to-use routing, and flexible middleware with Gin.
 
 - 📖 [Features](#-features)
 - 🧑‍💻 [Development Setup](#-development-setup)
+- 🔄 [Live Reload](#️-live-reload)
 - 🧪 [Testing](#-testing)
 - 🏗️ [Build](#️-build)
 - 🛡️ [Code Quality](#️-code-quality)
@@ -43,6 +44,24 @@ go mod tidy
 # Start the application
 go run cmd/app/main.go
 ```
+
+## 🔄 Live Reload
+
+`Air` is a live reload tool for Go applications that automatically rebuilds and restarts the application whenever you make changes to the codebase. It's ideal for speeding up development workflows.
+
+### Using Air
+
+1. Ensure `Air` is installed in your system:
+   ```bash
+   go install github.com/air-verse/air@latest
+   ```
+
+2. Run the application with Air:
+   ```bash
+   air
+   ```
+
+When you make changes to your code, Air will automatically rebuild and restart the application.
 
 ## 🧪 Testing
 
@@ -109,7 +128,8 @@ The application will be available at `http://localhost:8080`.
 ![Gin Swagger](https://img.shields.io/badge/Gin_Swagger-85EA2D?logo=swagger&logoColor=white)  
 ![Go Playground Validator](https://img.shields.io/badge/Go_Playground_Validator-FDD835?logo=go&logoColor=white)  
 ![SonarQube](https://img.shields.io/badge/SonarQube-4E9BCD?logo=sonarqube&logoColor=white)  
-![Docker](https://img.shields.io/badge/Docker-2496ED?logo=docker&logoColor=white)
+![Docker](https://img.shields.io/badge/Docker-2496ED?logo=docker&logoColor=white)  
+![Air](https://img.shields.io/badge/Air-Live_Reload-green?logo=go&logoColor=white)
 
 ---
 

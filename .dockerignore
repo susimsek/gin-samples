@@ -147,3 +147,8 @@ docker-logs/
 .gitconfig
 *.patch
 *.diff
+
+######################
+# Air
+######################
+/.air.toml
