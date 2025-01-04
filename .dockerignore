@@ -110,6 +110,7 @@ Desktop.ini
 *.class
 *.*~
 *~
+.editorconfig
 
 ######################
 # Docker
@@ -157,3 +158,8 @@ docker-logs/
 # GolangCI-Lint
 ######################
 .golangci.yml
+
+######################
+# SonarQube
+######################
+sonar-project.properties
