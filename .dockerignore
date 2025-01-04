@@ -152,3 +152,8 @@ docker-logs/
 # Air
 ######################
 .air.toml
+
+######################
+# GolangCI-Lint
+######################
+.golangci.yml

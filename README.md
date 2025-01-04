@@ -15,7 +15,7 @@ Explore high performance, easy-to-use routing, and flexible middleware with Gin.
 - 🧑‍💻 [Development Setup](#-development-setup)
 - 🔄 [Live Reload](#-live-reload)
 - 🧪 [Testing](#-testing)
-- 🕵️‍♂️ [Code Analysis](#-code-analysis)
+- 🕵️‍♂️ [Code Analysis](#️-code-analysis)
 - 🏗️ [Build](#️-build)
 - 🛡️ [Code Quality](#️-code-quality)
 - 🐳 [Docker](#-docker)
