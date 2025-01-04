@@ -57,12 +57,17 @@ go run cmd/app/main.go
    go install github.com/air-verse/air@latest
    ```
 
-2. Run the application with Air:
+2. 	(Optional) Install Delve for debugging:
+   ```bash
+   go install github.com/go-delve/delve/cmd/dlv@latest
+   ```
+
+3.  Run the application with Air:
    ```bash
    air
    ```
 
-When you make changes to your code, Air will automatically rebuild and restart the application.
+When you make changes to your code, Air will automatically rebuild and restart the application. If you’ve set up Delve, you can debug on localhost:2345.
 
 ## 🧪 Testing
 
