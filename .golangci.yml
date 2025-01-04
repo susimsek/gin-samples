@@ -1,0 +1,19 @@
+run:
+  timeout: 5m
+  tests: true
+
+linters:
+  enable:
+    - errcheck
+    - gosimple
+    - govet
+    - ineffassign
+    - staticcheck
+    - unused
+
+formats:
+  - format: json
+    path: stderr
+  - format: checkstyle
+    path: report.xml
+  - format: colored-line-number

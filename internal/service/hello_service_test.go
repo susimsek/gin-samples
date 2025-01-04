@@ -18,7 +18,7 @@ func (m *MockHelloRepository) ExistsByMessage(message string) bool {
 
 func (m *MockHelloRepository) SaveGreeting(input model.GreetingInput) model.Greeting {
 	// Mock behavior for SaveGreeting
-	return model.Greeting{Message: input.Message}
+	return model.Greeting(input)
 }
 
 func (m *MockHelloRepository) GetAllGreetings() []model.Greeting {

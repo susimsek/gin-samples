@@ -3,6 +3,7 @@ package main
 import (
 	_ "gin-samples/docs"
 	"gin-samples/internal/di"
+	"log"
 )
 
 // @title Gin Samples API
@@ -25,5 +26,7 @@ func main() {
 }
 
 func run(addr string, container *di.Container) {
-	container.Router.Run(addr)
+	if err := container.Router.Run(addr); err != nil {
+		log.Fatalf("Failed to start server: %v", err)
+	}
 }

@@ -35,6 +35,11 @@ jobs:
       - name: Install Dependencies
         run: go mod tidy
 
+      - name: Run Linter
+        uses: golangci/golangci-lint-action@v6
+        with:
+          version: v1.63
+
       - name: Run Tests
         run:  go test ./... -v -coverprofile=coverage.out
 

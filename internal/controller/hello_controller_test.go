@@ -21,7 +21,7 @@ func (m *MockHelloService) GetGreeting() model.Greeting {
 }
 
 func (m *MockHelloService) CreateGreeting(input model.GreetingInput) (model.Greeting, error) {
-	return model.Greeting{Message: input.Message}, nil
+	return model.Greeting(input), nil
 }
 
 func (m *MockHelloService) GetAllGreetings() []model.Greeting {

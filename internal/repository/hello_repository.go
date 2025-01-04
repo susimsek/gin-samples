@@ -27,9 +27,7 @@ func (r *helloRepositoryImpl) SaveGreeting(input model.GreetingInput) model.Gree
 	r.mutex.Lock()
 	defer r.mutex.Unlock()
 
-	newGreeting := model.Greeting{
-		Message: input.Message,
-	}
+	newGreeting := model.Greeting(input)
 	r.data = append(r.data, newGreeting)
 
 	return newGreeting

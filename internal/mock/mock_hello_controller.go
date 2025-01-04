@@ -19,7 +19,7 @@ func (m *MockHelloController) CreateGreeting(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	c.JSON(http.StatusCreated, model.Greeting{Message: input.Message})
+	c.JSON(http.StatusCreated, model.Greeting(input))
 }
 
 func (m *MockHelloController) GetAllGreetings(c *gin.Context) {

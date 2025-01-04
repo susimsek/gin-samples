@@ -62,21 +62,21 @@ func (h *helloControllerImpl) CreateGreeting(c *gin.Context) {
 	var input model.GreetingInput
 
 	if err := c.ShouldBindJSON(&input); err != nil {
-		c.Error(&customError.MessageNotReadableError{
+		_ = c.Error(&customError.MessageNotReadableError{
 			Detail: err.Error(),
 		})
 		return
 	}
 
 	if err := h.Validator.Struct(input); err != nil {
-		c.Error(err)
+		_ = c.Error(err)
 		return
 	}
 
 	// Call service layer
 	newGreeting, err := h.HelloService.CreateGreeting(input)
 	if err != nil {
-		c.Error(err) // ErrorHandlingMiddleware will handle this
+		_ = c.Error(err) // ErrorHandlingMiddleware will handle this
 		return
 	}
 

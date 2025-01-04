@@ -15,6 +15,7 @@ Explore high performance, easy-to-use routing, and flexible middleware with Gin.
 - 🧑‍💻 [Development Setup](#-development-setup)
 - 🔄 [Live Reload](#-live-reload)
 - 🧪 [Testing](#-testing)
+- 🕵️‍♂️ [Code Analysis](#-code-analysis)
 - 🏗️ [Build](#️-build)
 - 🛡️ [Code Quality](#️-code-quality)
 - 🐳 [Docker](#-docker)
@@ -95,6 +96,28 @@ To build the application for production:
 go build -o gin-samples
 ```
 
+## 🕵️ Code Analysis
+
+`GolangCI-Lint` is a powerful and fast linters runner for Go. It helps maintain code quality by analyzing the source code for potential issues and providing suggestions for improvement.
+
+### Setup GolangCI-Lint
+
+1. Install GolangCI-Lint:
+   ```bash
+   brew install golangci/tap/golangci-lint
+   ```
+   Or, for a manual installation:
+   ```bash
+   curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $(go env GOPATH)/bin v1.50.1
+   ```
+
+3. Run GolangCI-Lint:
+   ```bash
+   golangci-lint run
+   ```
+
+By integrating GolangCI-Lint into your Go projects, you ensure consistent and high-quality code, saving time and effort in debugging and maintenance.
+
 ## 🛡️ Code Quality
 
 To assess code quality locally using SonarQube, execute:
@@ -129,7 +152,8 @@ The application will be available at `http://localhost:8080`.
 ![Go Playground Validator](https://img.shields.io/badge/Go_Playground_Validator-FDD835?logo=go&logoColor=white)  
 ![SonarQube](https://img.shields.io/badge/SonarQube-4E9BCD?logo=sonarqube&logoColor=white)  
 ![Docker](https://img.shields.io/badge/Docker-2496ED?logo=docker&logoColor=white)  
-![Air](https://img.shields.io/badge/Air-Live_Reload-green?logo=go&logoColor=white)
+![Air](https://img.shields.io/badge/Air-Live_Reload-green?logo=go&logoColor=white)  
+![GolangCI-Lint](https://img.shields.io/badge/GolangCI--Lint-Code_Analysis-orange?logo=go&logoColor=white)
 
 ---
 

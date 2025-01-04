@@ -24,7 +24,9 @@ func NewValidator() (*validator.Validate, ut.Translator) {
 	uni := ut.New(translator, translator)
 	trans, _ := uni.GetTranslator("en")
 
-	entranslations.RegisterDefaultTranslations(validate, trans)
+	if err := entranslations.RegisterDefaultTranslations(validate, trans); err != nil {
+		panic("failed to register default translations: " + err.Error())
+	}
 
 	registerCustomTranslations(validate, trans)
 
@@ -55,9 +57,4 @@ func registerCustomTranslations(validate *validator.Validate, trans ut.Translato
 		t, _ := ut.T("max", fe.Field(), fe.Param())
 		return t
 	})
-}
-
-func translateFunc(ut ut.Translator, fe validator.FieldError) string {
-	t, _ := ut.T(fe.Tag(), fe.Field(), fe.Param())
-	return t
 }
