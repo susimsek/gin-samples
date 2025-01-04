@@ -24,6 +24,38 @@ definitions:
     required:
     - message
     type: object
+  model.ProblemDetail:
+    properties:
+      detail:
+        type: string
+      error:
+        type: string
+      instance:
+        type: string
+      status:
+        type: integer
+      title:
+        type: string
+      type:
+        type: string
+      violations:
+        items:
+          $ref: '#/definitions/model.Violation'
+        type: array
+    type: object
+  model.Violation:
+    properties:
+      code:
+        type: string
+      field:
+        type: string
+      message:
+        type: string
+      object:
+        type: string
+      rejectedValue:
+        type: string
+    type: object
 host: localhost:8080
 info:
   contact:
@@ -71,7 +103,36 @@ paths:
           description: Created
           schema:
             $ref: '#/definitions/model.Greeting'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.ProblemDetail'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/model.ProblemDetail'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.ProblemDetail'
       summary: Create a new greeting message
+      tags:
+      - hello
+  /api/hello/all:
+    get:
+      consumes:
+      - application/json
+      description: Returns all greeting messages
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/model.Greeting'
+            type: array
+      summary: Get all greeting messages
       tags:
       - hello
 swagger: "2.0"

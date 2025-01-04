@@ -69,6 +69,50 @@
                         "schema": {
                             "$ref": "#/definitions/model.Greeting"
                         }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/model.ProblemDetail"
+                        }
+                    },
+                    "409": {
+                        "description": "Conflict",
+                        "schema": {
+                            "$ref": "#/definitions/model.ProblemDetail"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/model.ProblemDetail"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/hello/all": {
+            "get": {
+                "description": "Returns all greeting messages",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "hello"
+                ],
+                "summary": "Get all greeting messages",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/model.Greeting"
+                            }
+                        }
                     }
                 }
             }
@@ -104,6 +148,55 @@
                     "maxLength": 100,
                     "minLength": 1,
                     "example": "Hello, World!"
+                }
+            }
+        },
+        "model.ProblemDetail": {
+            "type": "object",
+            "properties": {
+                "detail": {
+                    "type": "string"
+                },
+                "error": {
+                    "type": "string"
+                },
+                "instance": {
+                    "type": "string"
+                },
+                "status": {
+                    "type": "integer"
+                },
+                "title": {
+                    "type": "string"
+                },
+                "type": {
+                    "type": "string"
+                },
+                "violations": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.Violation"
+                    }
+                }
+            }
+        },
+        "model.Violation": {
+            "type": "object",
+            "properties": {
+                "code": {
+                    "type": "string"
+                },
+                "field": {
+                    "type": "string"
+                },
+                "message": {
+                    "type": "string"
+                },
+                "object": {
+                    "type": "string"
+                },
+                "rejectedValue": {
+                    "type": "string"
                 }
             }
         }

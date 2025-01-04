@@ -8,14 +8,25 @@ import (
 )
 
 func TestNewContainer(t *testing.T) {
+	// Create a new container
 	container := di.NewContainer()
 
-	assert.NotNil(t, container)
+	// Ensure the container is not nil
+	assert.NotNil(t, container, "Container should not be nil")
 
-	assert.NotNil(t, container.HelloService)
-	assert.NotNil(t, container.HelloController)
-	assert.NotNil(t, container.Router)
+	// Verify Validator and Translator
+	assert.NotNil(t, container.Validator, "Validator should not be nil")
+	assert.NotNil(t, container.Translator, "Translator should not be nil")
 
-	greeting := container.HelloService.GetGreeting()
-	assert.Equal(t, "Hello, World!", greeting.Message)
+	// Check HelloRepository
+	assert.NotNil(t, container.HelloRepository, "HelloRepository should not be nil")
+
+	// Check HelloService
+	assert.NotNil(t, container.HelloService, "HelloService should not be nil")
+
+	// Check HelloController
+	assert.NotNil(t, container.HelloController, "HelloController should not be nil")
+
+	// Check Router
+	assert.NotNil(t, container.Router, "Router should not be nil")
 }

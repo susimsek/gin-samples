@@ -21,3 +21,11 @@ func (m *MockHelloController) CreateGreeting(c *gin.Context) {
 	}
 	c.JSON(http.StatusCreated, model.Greeting{Message: input.Message})
 }
+
+func (m *MockHelloController) GetAllGreetings(c *gin.Context) {
+	mockGreetings := []model.Greeting{
+		{Message: "Mocked Hello, World!"},
+		{Message: "Mocked Hi!"},
+	}
+	c.JSON(http.StatusOK, mockGreetings)
+}

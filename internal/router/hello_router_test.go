@@ -54,3 +54,26 @@ func TestAddHelloRoutes_CreateGreeting(t *testing.T) {
 	expectedResponse := `{"message":"Mocked POST Greeting!"}`
 	assert.JSONEq(t, expectedResponse, w.Body.String())
 }
+
+func TestAddHelloRoutes_GetAllGreetings(t *testing.T) {
+	gin.SetMode(gin.TestMode)
+
+	mockController := &mock.MockHelloController{}
+
+	r := gin.Default()
+
+	router.AddHelloRoutes(r, mockController)
+
+	req, _ := http.NewRequest(http.MethodGet, "/api/hello/all", nil)
+	w := httptest.NewRecorder()
+
+	r.ServeHTTP(w, req)
+
+	assert.Equal(t, http.StatusOK, w.Code)
+
+	expectedResponse := `[
+		{"message":"Mocked Hello, World!"},
+		{"message":"Mocked Hi!"}
+	]`
+	assert.JSONEq(t, expectedResponse, w.Body.String())
+}

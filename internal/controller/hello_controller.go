@@ -1,9 +1,9 @@
 package controller
 
 import (
-	"errors"
 	"gin-samples/internal/model"
 	"gin-samples/internal/service"
+	ut "github.com/go-playground/universal-translator"
 	"github.com/go-playground/validator/v10"
 	"net/http"
 
@@ -13,17 +13,22 @@ import (
 type HelloController interface {
 	Hello(c *gin.Context)
 	CreateGreeting(c *gin.Context)
+	GetAllGreetings(c *gin.Context)
 }
 
 type helloControllerImpl struct {
 	HelloService service.HelloService
 	Validator    *validator.Validate
+	Trans        ut.Translator
 }
 
-func NewHelloController(service service.HelloService) HelloController {
+func NewHelloController(service service.HelloService,
+	validator *validator.Validate,
+	trans ut.Translator) HelloController {
 	return &helloControllerImpl{
 		HelloService: service,
-		Validator:    validator.New(),
+		Validator:    validator,
+		Trans:        trans,
 	}
 }
 
@@ -48,26 +53,42 @@ func (h *helloControllerImpl) Hello(c *gin.Context) {
 // @Produce json
 // @Param input body model.GreetingInput true "Greeting Input"
 // @Success 201 {object} model.Greeting
+// @Failure 400 {object} model.ProblemDetail
+// @Failure 409 {object} model.ProblemDetail
+// @Failure 500 {object} model.ProblemDetail
 // @Router /api/hello [post]
 func (h *helloControllerImpl) CreateGreeting(c *gin.Context) {
 	var input model.GreetingInput
 
 	if err := c.ShouldBindJSON(&input); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid input format"})
+		c.Error(err)
 		return
 	}
 
 	if err := h.Validator.Struct(input); err != nil {
-		var validationErrors validator.ValidationErrors
-		errors.As(err, &validationErrors)
-		errorMessages := make(map[string]string)
-		for _, validationErr := range validationErrors {
-			errorMessages[validationErr.Field()] = validationErr.Tag()
-		}
-		c.JSON(http.StatusBadRequest, gin.H{"errors": errorMessages})
+		c.Error(err)
 		return
 	}
 
-	newGreeting := h.HelloService.CreateGreeting(input)
+	// Call service layer
+	newGreeting, err := h.HelloService.CreateGreeting(input)
+	if err != nil {
+		c.Error(err) // ErrorHandlingMiddleware will handle this
+		return
+	}
+
 	c.JSON(http.StatusCreated, newGreeting)
+}
+
+// GetAllGreetings godoc
+// @Summary Get all greeting messages
+// @Description Returns all greeting messages
+// @Tags hello
+// @Accept json
+// @Produce json
+// @Success 200 {array} model.Greeting
+// @Router /api/hello/all [get]
+func (h *helloControllerImpl) GetAllGreetings(c *gin.Context) {
+	greetings := h.HelloService.GetAllGreetings()
+	c.JSON(http.StatusOK, greetings)
 }

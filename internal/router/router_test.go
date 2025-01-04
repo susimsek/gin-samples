@@ -8,6 +8,8 @@ import (
 	"testing"
 
 	"github.com/gin-gonic/gin"
+	en "github.com/go-playground/locales/en"
+	ut "github.com/go-playground/universal-translator"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -15,8 +17,11 @@ func TestSetupRouter(t *testing.T) {
 	gin.SetMode(gin.TestMode)
 
 	mockController := &mock.MockHelloController{}
+	translator := en.New()
+	uni := ut.New(translator, translator)
+	trans, _ := uni.GetTranslator("en")
 
-	r := router.SetupRouter(mockController)
+	r := router.SetupRouter(mockController, trans)
 
 	req, _ := http.NewRequest(http.MethodGet, "/api/hello", nil)
 	w := httptest.NewRecorder()
