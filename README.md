@@ -13,7 +13,7 @@ Explore high performance, easy-to-use routing, and flexible middleware with Gin.
 
 - 📖 [Features](#-features)
 - 🧑‍💻 [Development Setup](#-development-setup)
-- 🔄 [Live Reload](#️-live-reload)
+- 🔄 [Live Reload](#-live-reload)
 - 🧪 [Testing](#-testing)
 - 🏗️ [Build](#️-build)
 - 🛡️ [Code Quality](#️-code-quality)
