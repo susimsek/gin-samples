@@ -12,7 +12,7 @@ type Config struct {
 func LoadConfig() *Config {
 	env := os.Getenv("APP_ENV")
 	if env == "" {
-		env = "local"
+		env = "dev"
 	}
 
 	_ = godotenv.Load(".env")
