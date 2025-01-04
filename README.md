@@ -1,5 +1,10 @@
 # Gin Samples
 
+![Build Status](https://github.com/susimsek/gin-samples/actions/workflows/deploy.yml/badge.svg)
+[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=gin-samples&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=gin-samples)
+[![Coverage](https://sonarcloud.io/api/project_badges/measure?project=gin-samples&metric=coverage)](https://sonarcloud.io/summary/new_code?id=gin-samples)
+![Top Language](https://img.shields.io/github/languages/top/susimsek/gin-samples)
+
 Welcome to **Gin Samples** – a lightweight and fast HTTP server built using the Gin framework.
 
 Explore high performance, easy-to-use routing, and flexible middleware with Gin. 🚀
@@ -101,6 +106,8 @@ The application will be available at `http://localhost:8080`.
 
 ![Go](https://img.shields.io/badge/Go-1.23-blue?logo=go&logoColor=white)  
 ![Gin Framework](https://img.shields.io/badge/Gin_Framework-000000?logo=go&logoColor=white)  
+![Gin Swagger](https://img.shields.io/badge/Gin_Swagger-85EA2D?logo=swagger&logoColor=white)  
+![Go Playground Validator](https://img.shields.io/badge/Go_Playground_Validator-FDD835?logo=go&logoColor=white)  
 ![SonarQube](https://img.shields.io/badge/SonarQube-4E9BCD?logo=sonarqube&logoColor=white)  
 ![Docker](https://img.shields.io/badge/Docker-2496ED?logo=docker&logoColor=white)
 
