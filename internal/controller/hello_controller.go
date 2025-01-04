@@ -1,6 +1,7 @@
 package controller
 
 import (
+	customError "gin-samples/internal/error"
 	"gin-samples/internal/model"
 	"gin-samples/internal/service"
 	ut "github.com/go-playground/universal-translator"
@@ -61,7 +62,9 @@ func (h *helloControllerImpl) CreateGreeting(c *gin.Context) {
 	var input model.GreetingInput
 
 	if err := c.ShouldBindJSON(&input); err != nil {
-		c.Error(err)
+		c.Error(&customError.MessageNotReadableError{
+			Detail: err.Error(),
+		})
 		return
 	}
 

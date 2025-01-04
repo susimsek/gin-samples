@@ -136,7 +136,7 @@ const docTemplate = `{
                     "description": "Message is the greeting text",
                     "type": "string",
                     "maxLength": 100,
-                    "minLength": 1,
+                    "minLength": 3,
                     "example": "Hello, World!"
                 }
             }
@@ -152,7 +152,7 @@ const docTemplate = `{
                     "description": "Message is the greeting text to be created",
                     "type": "string",
                     "maxLength": 100,
-                    "minLength": 1,
+                    "minLength": 3,
                     "example": "Hello, World!"
                 }
             }

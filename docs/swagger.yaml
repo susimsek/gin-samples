@@ -7,7 +7,7 @@ definitions:
         description: Message is the greeting text
         example: Hello, World!
         maxLength: 100
-        minLength: 1
+        minLength: 3
         type: string
     required:
     - message
@@ -19,7 +19,7 @@ definitions:
         description: Message is the greeting text to be created
         example: Hello, World!
         maxLength: 100
-        minLength: 1
+        minLength: 3
         type: string
     required:
     - message
