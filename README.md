@@ -165,7 +165,7 @@ The application will be available at `http://localhost:8080`.
 ![SonarQube](https://img.shields.io/badge/SonarQube-4E9BCD?logo=sonarqube&logoColor=white)  
 ![Docker](https://img.shields.io/badge/Docker-2496ED?logo=docker&logoColor=white)  
 ![Air](https://img.shields.io/badge/Air-Live_Reload-green?logo=go&logoColor=white)  
-![GolangCI-Lint](https://img.shields.io/badge/GolangCI--Lint-Code_Analysis-orange?logo=go&logoColor=white)
+![GolangCI-Lint](https://img.shields.io/badge/GolangCI--Lint-Code_Analysis-orange?logo=go&logoColor=white)  
 ![Testify](https://img.shields.io/badge/Testify-Mocking_Framework-6E85B7?logo=go&logoColor=white)
 
 ---
