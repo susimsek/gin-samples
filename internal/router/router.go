@@ -11,10 +11,18 @@ import (
 )
 
 func SetupRouter(helloController controller.HelloController,
+	healthController controller.HealthController,
 	trans ut.Translator) *gin.Engine {
 	r := gin.Default()
 	r.Use(middleware.ErrorHandlingMiddleware(trans))
+
+	// Add Hello routes
 	AddHelloRoutes(r, helloController)
+
+	// Add Health routes
+	AddHealthRoutes(r, healthController)
+
+	// Swagger route
 	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
 	return r

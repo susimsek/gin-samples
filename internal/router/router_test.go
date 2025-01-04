@@ -17,11 +17,12 @@ func TestSetupRouter(t *testing.T) {
 	gin.SetMode(gin.TestMode)
 
 	mockController := &mock.MockHelloController{}
+	mockHealthController := &mock.MockHealthController{}
 	translator := en.New()
 	uni := ut.New(translator, translator)
 	trans, _ := uni.GetTranslator("en")
 
-	r := router.SetupRouter(mockController, trans)
+	r := router.SetupRouter(mockController, mockHealthController, trans)
 
 	req, _ := http.NewRequest(http.MethodGet, "/api/hello", nil)
 	w := httptest.NewRecorder()

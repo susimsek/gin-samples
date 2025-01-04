@@ -27,6 +27,9 @@ func TestNewContainer(t *testing.T) {
 	// Check HelloController
 	assert.NotNil(t, container.HelloController, "HelloController should not be nil")
 
+	// Check HealthController
+	assert.NotNil(t, container.HealthController, "HealthController should not be nil")
+
 	// Check Router
 	assert.NotNil(t, container.Router, "Router should not be nil")
 }

@@ -122,6 +122,52 @@ const docTemplate = `{
                     }
                 }
             }
+        },
+        "/health/liveness": {
+            "get": {
+                "description": "Returns the liveness status of the application",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "health"
+                ],
+                "summary": "Check if the application is alive",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/model.HealthStatus"
+                        }
+                    }
+                }
+            }
+        },
+        "/health/readiness": {
+            "get": {
+                "description": "Returns the readiness status of the application",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "health"
+                ],
+                "summary": "Check if the application is ready",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/model.HealthStatus"
+                        }
+                    }
+                }
+            }
         }
     },
     "definitions": {
@@ -154,6 +200,20 @@ const docTemplate = `{
                     "maxLength": 100,
                     "minLength": 3,
                     "example": "Hello, World!"
+                }
+            }
+        },
+        "model.HealthStatus": {
+            "description": "Health status model",
+            "type": "object",
+            "required": [
+                "status"
+            ],
+            "properties": {
+                "status": {
+                    "description": "Status indicates the health of the application",
+                    "type": "string",
+                    "example": "UP"
                 }
             }
         },

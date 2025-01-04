@@ -24,6 +24,16 @@ definitions:
     required:
     - message
     type: object
+  model.HealthStatus:
+    description: Health status model
+    properties:
+      status:
+        description: Status indicates the health of the application
+        example: UP
+        type: string
+    required:
+    - status
+    type: object
   model.ProblemDetail:
     properties:
       detail:
@@ -135,4 +145,34 @@ paths:
       summary: Get all greeting messages
       tags:
       - hello
+  /health/liveness:
+    get:
+      consumes:
+      - application/json
+      description: Returns the liveness status of the application
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.HealthStatus'
+      summary: Check if the application is alive
+      tags:
+      - health
+  /health/readiness:
+    get:
+      consumes:
+      - application/json
+      description: Returns the readiness status of the application
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.HealthStatus'
+      summary: Check if the application is ready
+      tags:
+      - health
 swagger: "2.0"
