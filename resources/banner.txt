@@ -1,0 +1,9 @@
+${AnsiColor.RED} ██████╗ ██╗███╗   ██╗
+${AnsiColor.RED}██╔════╝ ██║████╗  ██║
+${AnsiColor.RED}██║  ███╗██║██╔██╗ ██║
+${AnsiColor.RED}██║   ██║██║██║╚██╗██║
+${AnsiColor.RED}╚██████╔╝██║██║ ╚████║
+${AnsiColor.RED} ╚═════╝ ╚═╝╚═╝  ╚═══
+
+${AnsiColor.BLUE}Gin Framework - Fast and Simple
+${AnsiColor.BLUE}Environment: ${ENV}${AnsiColor.DEFAULT}
