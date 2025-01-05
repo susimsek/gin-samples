@@ -6,6 +6,7 @@ import (
 	"gin-samples/internal/entity"
 	customError "gin-samples/internal/error"
 	"gin-samples/internal/repository"
+	"time"
 )
 
 type HelloService interface {
@@ -26,7 +27,12 @@ func NewHelloService(repo repository.HelloRepository) HelloService {
 
 // GetGreeting returns a static greeting message
 func (s *helloServiceImpl) GetGreeting() dto.GreetingResponse {
-	return dto.GreetingResponse{ID: 0, Message: "Hello, World!"}
+	return dto.GreetingResponse{
+		ID:        0,
+		Message:   "Hello, World!",
+		CreatedAt: time.Now(),
+		UpdatedAt: time.Now(),
+	}
 }
 
 // CreateGreeting creates a new greeting
@@ -55,8 +61,10 @@ func (s *helloServiceImpl) CreateGreeting(input dto.GreetingInput) (dto.Greeting
 
 	// Convert entity to DTO
 	return dto.GreetingResponse{
-		ID:      savedGreeting.ID,
-		Message: savedGreeting.Message,
+		ID:        savedGreeting.ID,
+		Message:   savedGreeting.Message,
+		CreatedAt: savedGreeting.CreatedAt,
+		UpdatedAt: savedGreeting.UpdatedAt,
 	}, nil
 }
 
@@ -71,8 +79,10 @@ func (s *helloServiceImpl) GetAllGreetings() ([]dto.GreetingResponse, error) {
 	response := make([]dto.GreetingResponse, len(greetings))
 	for i, greeting := range greetings {
 		response[i] = dto.GreetingResponse{
-			ID:      greeting.ID,
-			Message: greeting.Message,
+			ID:        greeting.ID,
+			Message:   greeting.Message,
+			CreatedAt: greeting.CreatedAt,
+			UpdatedAt: greeting.UpdatedAt,
 		}
 	}
 	return response, nil
