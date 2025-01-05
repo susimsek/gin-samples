@@ -6,7 +6,7 @@ import (
 	"gin-samples/internal/entity"
 	customError "gin-samples/internal/error"
 	"gin-samples/internal/repository"
-	"time"
+	"gin-samples/internal/utils"
 )
 
 type HelloService interface {
@@ -16,22 +16,26 @@ type HelloService interface {
 }
 
 type helloServiceImpl struct {
-	repo repository.HelloRepository
+	repo  repository.HelloRepository
+	clock utils.Clock
 }
 
-func NewHelloService(repo repository.HelloRepository) HelloService {
+func NewHelloService(repo repository.HelloRepository,
+	clock utils.Clock) HelloService {
 	return &helloServiceImpl{
-		repo: repo,
+		repo:  repo,
+		clock: clock,
 	}
 }
 
 // GetGreeting returns a static greeting message
 func (s *helloServiceImpl) GetGreeting() dto.GreetingResponse {
+	now := s.clock.Now()
 	return dto.GreetingResponse{
 		ID:        0,
 		Message:   "Hello, World!",
-		CreatedAt: time.Now(),
-		UpdatedAt: time.Now(),
+		CreatedAt: now,
+		UpdatedAt: now,
 	}
 }
 

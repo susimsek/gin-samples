@@ -5,9 +5,11 @@ import (
 	"gin-samples/internal/dto"
 	"gin-samples/internal/entity"
 	customError "gin-samples/internal/error"
+	customMock "gin-samples/internal/mock"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 	"testing"
+	"time"
 )
 
 // MockHelloRepository is a mock implementation of HelloRepository
@@ -47,9 +49,15 @@ func (m *MockHelloRepository) FindByMessage(message string) (*entity.Greeting, e
 // Test cases for HelloService
 
 func TestHelloService_GetGreeting(t *testing.T) {
-	service := NewHelloService(nil) // No repo needed for this method
+	mockClock := new(customMock.MockClock)
+	fixedTime := time.Date(2025, 1, 5, 10, 0, 0, 0, time.UTC)
+	mockClock.On("Now").Return(fixedTime)
+	service := NewHelloService(nil, mockClock) // No repo needed for this method
 
-	expected := dto.GreetingResponse{ID: 0, Message: "Hello, World!"}
+	expected := dto.GreetingResponse{ID: 0,
+		Message:   "Hello, World!",
+		CreatedAt: fixedTime,
+		UpdatedAt: fixedTime}
 	actual := service.GetGreeting()
 
 	assert.Equal(t, expected, actual, "Greeting message should match the expected value")
@@ -57,7 +65,7 @@ func TestHelloService_GetGreeting(t *testing.T) {
 
 func TestHelloService_CreateGreeting_Success(t *testing.T) {
 	mockRepo := new(MockHelloRepository)
-	service := NewHelloService(mockRepo)
+	service := NewHelloService(mockRepo, nil)
 
 	input := dto.GreetingInput{Message: "Unique Greeting"}
 	expectedEntity := &entity.Greeting{ID: 1, Message: "Unique Greeting"}
@@ -76,7 +84,7 @@ func TestHelloService_CreateGreeting_Success(t *testing.T) {
 
 func TestHelloService_CreateGreeting_Conflict(t *testing.T) {
 	mockRepo := new(MockHelloRepository)
-	service := NewHelloService(mockRepo)
+	service := NewHelloService(mockRepo, nil)
 
 	input := dto.GreetingInput{Message: "Duplicate Greeting"}
 
@@ -98,7 +106,7 @@ func TestHelloService_CreateGreeting_Conflict(t *testing.T) {
 
 func TestHelloService_GetAllGreetings(t *testing.T) {
 	mockRepo := new(MockHelloRepository)
-	service := NewHelloService(mockRepo)
+	service := NewHelloService(mockRepo, nil)
 
 	expectedEntities := []entity.Greeting{
 		{ID: 1, Message: "Hello, World!"},
