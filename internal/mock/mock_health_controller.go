@@ -1,7 +1,7 @@
 package mock
 
 import (
-	"gin-samples/internal/model"
+	"gin-samples/internal/dto"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -10,13 +10,13 @@ import (
 type MockHealthController struct{}
 
 func (m *MockHealthController) Liveness(c *gin.Context) {
-	c.JSON(http.StatusOK, model.HealthStatus{
+	c.JSON(http.StatusOK, dto.HealthStatus{
 		Status: "UP",
 	})
 }
 
 func (m *MockHealthController) Readiness(c *gin.Context) {
-	c.JSON(http.StatusOK, model.HealthStatus{
+	c.JSON(http.StatusOK, dto.HealthStatus{
 		Status: "UP",
 	})
 }

@@ -1,19 +1,7 @@
 basePath: /
 definitions:
-  model.Greeting:
-    description: Greeting model
-    properties:
-      message:
-        description: Message is the greeting text
-        example: Hello, World!
-        maxLength: 100
-        minLength: 3
-        type: string
-    required:
-    - message
-    type: object
-  model.GreetingInput:
-    description: Input model for creating a new greeting
+  dto.GreetingInput:
+    description: Input dto for creating a new greeting
     properties:
       message:
         description: Message is the greeting text to be created
@@ -24,8 +12,25 @@ definitions:
     required:
     - message
     type: object
-  model.HealthStatus:
-    description: Health status model
+  dto.GreetingResponse:
+    description: Greeting dto
+    properties:
+      id:
+        description: ID of the greeting
+        example: 1
+        type: integer
+      message:
+        description: Message is the greeting text
+        example: Hello, World!
+        maxLength: 100
+        minLength: 3
+        type: string
+    required:
+    - id
+    - message
+    type: object
+  dto.HealthStatus:
+    description: Health status dto
     properties:
       status:
         description: Status indicates the health of the application
@@ -34,7 +39,7 @@ definitions:
     required:
     - status
     type: object
-  model.ProblemDetail:
+  dto.ProblemDetail:
     properties:
       detail:
         type: string
@@ -50,10 +55,10 @@ definitions:
         type: string
       violations:
         items:
-          $ref: '#/definitions/model.Violation'
+          $ref: '#/definitions/dto.Violation'
         type: array
     type: object
-  model.Violation:
+  dto.Violation:
     properties:
       code:
         type: string
@@ -91,7 +96,11 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/model.Greeting'
+            $ref: '#/definitions/dto.GreetingResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/dto.ProblemDetail'
       summary: Get a greeting message
       tags:
       - hello
@@ -105,26 +114,26 @@ paths:
         name: input
         required: true
         schema:
-          $ref: '#/definitions/model.GreetingInput'
+          $ref: '#/definitions/dto.GreetingInput'
       produces:
       - application/json
       responses:
         "201":
           description: Created
           schema:
-            $ref: '#/definitions/model.Greeting'
+            $ref: '#/definitions/dto.GreetingResponse'
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/model.ProblemDetail'
+            $ref: '#/definitions/dto.ProblemDetail'
         "409":
           description: Conflict
           schema:
-            $ref: '#/definitions/model.ProblemDetail'
+            $ref: '#/definitions/dto.ProblemDetail'
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/model.ProblemDetail'
+            $ref: '#/definitions/dto.ProblemDetail'
       summary: Create a new greeting message
       tags:
       - hello
@@ -140,8 +149,12 @@ paths:
           description: OK
           schema:
             items:
-              $ref: '#/definitions/model.Greeting'
+              $ref: '#/definitions/dto.GreetingResponse'
             type: array
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/dto.ProblemDetail'
       summary: Get all greeting messages
       tags:
       - hello
@@ -156,7 +169,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/model.HealthStatus'
+            $ref: '#/definitions/dto.HealthStatus'
       summary: Check if the application is alive
       tags:
       - health
@@ -171,7 +184,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/model.HealthStatus'
+            $ref: '#/definitions/dto.HealthStatus'
       summary: Check if the application is ready
       tags:
       - health

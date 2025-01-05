@@ -1,65 +1,52 @@
 package repository
 
 import (
-	"gin-samples/internal/model"
-	"sync"
+	"gin-samples/internal/entity"
+	"gorm.io/gorm"
 )
 
 type HelloRepository interface {
-	SaveGreeting(input model.GreetingInput) model.Greeting
-	GetAllGreetings() []model.Greeting
-	FindByMessage(message string) (*model.Greeting, bool)
-	ExistsByMessage(message string) bool
+	SaveGreeting(greeting *entity.Greeting) (*entity.Greeting, error)
+	GetAllGreetings() ([]entity.Greeting, error)
+	FindByMessage(message string) (*entity.Greeting, error)
+	ExistsByMessage(message string) (bool, error)
 }
 
 type helloRepositoryImpl struct {
-	data  []model.Greeting
-	mutex sync.Mutex
+	db *gorm.DB
 }
 
-func NewHelloRepository() HelloRepository {
-	return &helloRepositoryImpl{
-		data: make([]model.Greeting, 0),
+func NewHelloRepository(db *gorm.DB) HelloRepository {
+	return &helloRepositoryImpl{db: db}
+}
+
+func (r *helloRepositoryImpl) SaveGreeting(greeting *entity.Greeting) (*entity.Greeting, error) {
+	if err := r.db.Create(greeting).Error; err != nil {
+		return nil, err
 	}
+	return greeting, nil
 }
 
-func (r *helloRepositoryImpl) SaveGreeting(input model.GreetingInput) model.Greeting {
-	r.mutex.Lock()
-	defer r.mutex.Unlock()
-
-	newGreeting := model.Greeting(input)
-	r.data = append(r.data, newGreeting)
-
-	return newGreeting
-}
-
-func (r *helloRepositoryImpl) GetAllGreetings() []model.Greeting {
-	r.mutex.Lock()
-	defer r.mutex.Unlock()
-
-	return r.data
-}
-
-func (r *helloRepositoryImpl) FindByMessage(message string) (*model.Greeting, bool) {
-	r.mutex.Lock()
-	defer r.mutex.Unlock()
-
-	for _, greeting := range r.data {
-		if greeting.Message == message {
-			return &greeting, true
-		}
+func (r *helloRepositoryImpl) GetAllGreetings() ([]entity.Greeting, error) {
+	var greetings []entity.Greeting
+	if err := r.db.Find(&greetings).Error; err != nil {
+		return nil, err
 	}
-	return nil, false
+	return greetings, nil
 }
 
-func (r *helloRepositoryImpl) ExistsByMessage(message string) bool {
-	r.mutex.Lock()
-	defer r.mutex.Unlock()
-
-	for _, greeting := range r.data {
-		if greeting.Message == message {
-			return true
-		}
+func (r *helloRepositoryImpl) FindByMessage(message string) (*entity.Greeting, error) {
+	var greeting entity.Greeting
+	if err := r.db.Where("message = ?", message).First(&greeting).Error; err != nil {
+		return nil, err
 	}
-	return false
+	return &greeting, nil
+}
+
+func (r *helloRepositoryImpl) ExistsByMessage(message string) (bool, error) {
+	var count int64
+	if err := r.db.Model(&entity.Greeting{}).Where("message = ?", message).Count(&count).Error; err != nil {
+		return false, err
+	}
+	return count > 0, nil
 }

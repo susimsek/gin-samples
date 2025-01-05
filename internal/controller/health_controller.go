@@ -1,7 +1,7 @@
 package controller
 
 import (
-	"gin-samples/internal/model"
+	"gin-samples/internal/dto"
 	"github.com/gin-gonic/gin"
 	"net/http"
 )
@@ -23,10 +23,10 @@ func NewHealthController() HealthController {
 // @Tags health
 // @Accept json
 // @Produce json
-// @Success 200 {object} model.HealthStatus
+// @Success 200 {object} dto.HealthStatus
 // @Router /health/liveness [get]
 func (h *healthControllerImpl) Liveness(c *gin.Context) {
-	c.JSON(http.StatusOK, model.HealthStatus{
+	c.JSON(http.StatusOK, dto.HealthStatus{
 		Status: "UP",
 	})
 }
@@ -37,10 +37,10 @@ func (h *healthControllerImpl) Liveness(c *gin.Context) {
 // @Tags health
 // @Accept json
 // @Produce json
-// @Success 200 {object} model.HealthStatus
+// @Success 200 {object} dto.HealthStatus
 // @Router /health/readiness [get]
 func (h *healthControllerImpl) Readiness(c *gin.Context) {
-	c.JSON(http.StatusOK, model.HealthStatus{
+	c.JSON(http.StatusOK, dto.HealthStatus{
 		Status: "UP",
 	})
 }

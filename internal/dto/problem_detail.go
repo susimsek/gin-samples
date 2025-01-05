@@ -1,4 +1,4 @@
-package model
+package dto
 
 // Violation represents a single validation error
 type Violation struct {

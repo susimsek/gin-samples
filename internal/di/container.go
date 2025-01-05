@@ -6,6 +6,7 @@ import (
 	"gin-samples/internal/repository"
 	"gin-samples/internal/router"
 	"gin-samples/internal/service"
+	"gorm.io/gorm"
 
 	"github.com/gin-gonic/gin"
 	"github.com/go-playground/universal-translator"
@@ -13,6 +14,7 @@ import (
 )
 
 type Container struct {
+	DB               *gorm.DB
 	HelloRepository  repository.HelloRepository
 	HelloService     service.HelloService
 	HelloController  controller.HelloController
@@ -24,7 +26,8 @@ type Container struct {
 
 func NewContainer() *Container {
 	// Repository
-	helloRepository := repository.NewHelloRepository()
+	db := config.InitDB()
+	helloRepository := repository.NewHelloRepository(db)
 
 	// Service
 	helloService := service.NewHelloService(helloRepository)
@@ -40,6 +43,7 @@ func NewContainer() *Container {
 	r := router.SetupRouter(helloController, healthController, translator)
 
 	return &Container{
+		DB:               db,
 		HelloRepository:  helloRepository,
 		HelloService:     helloService,
 		HelloController:  helloController,

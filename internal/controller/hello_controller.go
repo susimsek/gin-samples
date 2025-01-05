@@ -1,8 +1,8 @@
 package controller
 
 import (
+	"gin-samples/internal/dto"
 	customError "gin-samples/internal/error"
-	"gin-samples/internal/model"
 	"gin-samples/internal/service"
 	ut "github.com/go-playground/universal-translator"
 	"github.com/go-playground/validator/v10"
@@ -39,7 +39,8 @@ func NewHelloController(service service.HelloService,
 // @Tags hello
 // @Accept json
 // @Produce json
-// @Success 200 {object} model.Greeting
+// @Success 200 {object} dto.GreetingResponse
+// @Failure 500 {object} dto.ProblemDetail
 // @Router /api/hello [get]
 func (h *helloControllerImpl) Hello(c *gin.Context) {
 	greeting := h.HelloService.GetGreeting()
@@ -52,14 +53,14 @@ func (h *helloControllerImpl) Hello(c *gin.Context) {
 // @Tags hello
 // @Accept json
 // @Produce json
-// @Param input body model.GreetingInput true "Greeting Input"
-// @Success 201 {object} model.Greeting
-// @Failure 400 {object} model.ProblemDetail
-// @Failure 409 {object} model.ProblemDetail
-// @Failure 500 {object} model.ProblemDetail
+// @Param input body dto.GreetingInput true "Greeting Input"
+// @Success 201 {object} dto.GreetingResponse
+// @Failure 400 {object} dto.ProblemDetail
+// @Failure 409 {object} dto.ProblemDetail
+// @Failure 500 {object} dto.ProblemDetail
 // @Router /api/hello [post]
 func (h *helloControllerImpl) CreateGreeting(c *gin.Context) {
-	var input model.GreetingInput
+	var input dto.GreetingInput
 
 	if err := c.ShouldBindJSON(&input); err != nil {
 		_ = c.Error(&customError.MessageNotReadableError{
@@ -73,10 +74,9 @@ func (h *helloControllerImpl) CreateGreeting(c *gin.Context) {
 		return
 	}
 
-	// Call service layer
 	newGreeting, err := h.HelloService.CreateGreeting(input)
 	if err != nil {
-		_ = c.Error(err) // ErrorHandlingMiddleware will handle this
+		_ = c.Error(err)
 		return
 	}
 
@@ -89,9 +89,15 @@ func (h *helloControllerImpl) CreateGreeting(c *gin.Context) {
 // @Tags hello
 // @Accept json
 // @Produce json
-// @Success 200 {array} model.Greeting
+// @Success 200 {array} dto.GreetingResponse
+// @Failure 500 {object} dto.ProblemDetail
 // @Router /api/hello/all [get]
 func (h *helloControllerImpl) GetAllGreetings(c *gin.Context) {
-	greetings := h.HelloService.GetAllGreetings()
+	greetings, err := h.HelloService.GetAllGreetings()
+	if err != nil {
+		_ = c.Error(err)
+		return
+	}
+
 	c.JSON(http.StatusOK, greetings)
 }

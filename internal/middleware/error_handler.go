@@ -2,8 +2,8 @@ package middleware
 
 import (
 	"errors"
+	"gin-samples/internal/dto"
 	customError "gin-samples/internal/error"
-	"gin-samples/internal/model"
 	ut "github.com/go-playground/universal-translator"
 	"net/http"
 
@@ -35,7 +35,7 @@ func ErrorHandlingMiddleware(trans ut.Translator) gin.HandlerFunc {
 	}
 }
 
-func handleErrors(c *gin.Context, trans ut.Translator) model.ProblemDetail {
+func handleErrors(c *gin.Context, trans ut.Translator) dto.ProblemDetail {
 	for _, err := range c.Errors {
 		if problemDetail, ok := handleMessageNotReadableError(err, c); ok {
 			return problemDetail
@@ -51,10 +51,10 @@ func handleErrors(c *gin.Context, trans ut.Translator) model.ProblemDetail {
 	return handleInternalServerError(c)
 }
 
-func handleMessageNotReadableError(err *gin.Error, c *gin.Context) (model.ProblemDetail, bool) {
+func handleMessageNotReadableError(err *gin.Error, c *gin.Context) (dto.ProblemDetail, bool) {
 	var messageNotReadableErr *customError.MessageNotReadableError
 	if errors.As(err.Err, &messageNotReadableErr) {
-		return model.ProblemDetail{
+		return dto.ProblemDetail{
 			Type:     TypeAboutBlank,
 			Title:    TitleBadRequest,
 			Status:   http.StatusBadRequest,
@@ -63,16 +63,16 @@ func handleMessageNotReadableError(err *gin.Error, c *gin.Context) (model.Proble
 			Instance: c.Request.URL.Path,
 		}, true
 	}
-	return model.ProblemDetail{}, false
+	return dto.ProblemDetail{}, false
 }
 
-func handleValidationErrors(err *gin.Error, c *gin.Context, trans ut.Translator) (model.ProblemDetail, bool) {
+func handleValidationErrors(err *gin.Error, c *gin.Context, trans ut.Translator) (dto.ProblemDetail, bool) {
 	var validationErrs validator.ValidationErrors
 	if errors.As(err.Err, &validationErrs) {
-		var violations []model.Violation
+		var violations []dto.Violation
 		for _, ve := range validationErrs {
 			translatedMessage := ve.Translate(trans)
-			violations = append(violations, model.Violation{
+			violations = append(violations, dto.Violation{
 				Code:          ve.Tag(),
 				Object:        ve.StructNamespace(),
 				Field:         ve.Field(),
@@ -80,7 +80,7 @@ func handleValidationErrors(err *gin.Error, c *gin.Context, trans ut.Translator)
 				Message:       translatedMessage,
 			})
 		}
-		return model.ProblemDetail{
+		return dto.ProblemDetail{
 			Type:       TypeAboutBlank,
 			Title:      TitleBadRequest,
 			Status:     http.StatusBadRequest,
@@ -90,13 +90,13 @@ func handleValidationErrors(err *gin.Error, c *gin.Context, trans ut.Translator)
 			Violations: violations,
 		}, true
 	}
-	return model.ProblemDetail{}, false
+	return dto.ProblemDetail{}, false
 }
 
-func handleConflictErrors(err *gin.Error, c *gin.Context) (model.ProblemDetail, bool) {
+func handleConflictErrors(err *gin.Error, c *gin.Context) (dto.ProblemDetail, bool) {
 	var conflictErr *customError.ResourceConflictError
 	if errors.As(err.Err, &conflictErr) {
-		return model.ProblemDetail{
+		return dto.ProblemDetail{
 			Type:     TypeAboutBlank,
 			Title:    TitleConflict,
 			Status:   http.StatusConflict,
@@ -105,11 +105,11 @@ func handleConflictErrors(err *gin.Error, c *gin.Context) (model.ProblemDetail, 
 			Instance: c.Request.URL.Path,
 		}, true
 	}
-	return model.ProblemDetail{}, false
+	return dto.ProblemDetail{}, false
 }
 
-func handleInternalServerError(c *gin.Context) model.ProblemDetail {
-	return model.ProblemDetail{
+func handleInternalServerError(c *gin.Context) dto.ProblemDetail {
+	return dto.ProblemDetail{
 		Type:     TypeAboutBlank,
 		Title:    TitleInternalServerError,
 		Status:   http.StatusInternalServerError,

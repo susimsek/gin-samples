@@ -41,7 +41,13 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/model.Greeting"
+                            "$ref": "#/definitions/dto.GreetingResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ProblemDetail"
                         }
                     }
                 }
@@ -65,7 +71,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/model.GreetingInput"
+                            "$ref": "#/definitions/dto.GreetingInput"
                         }
                     }
                 ],
@@ -73,25 +79,25 @@ const docTemplate = `{
                     "201": {
                         "description": "Created",
                         "schema": {
-                            "$ref": "#/definitions/model.Greeting"
+                            "$ref": "#/definitions/dto.GreetingResponse"
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/model.ProblemDetail"
+                            "$ref": "#/definitions/dto.ProblemDetail"
                         }
                     },
                     "409": {
                         "description": "Conflict",
                         "schema": {
-                            "$ref": "#/definitions/model.ProblemDetail"
+                            "$ref": "#/definitions/dto.ProblemDetail"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/model.ProblemDetail"
+                            "$ref": "#/definitions/dto.ProblemDetail"
                         }
                     }
                 }
@@ -116,8 +122,14 @@ const docTemplate = `{
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/model.Greeting"
+                                "$ref": "#/definitions/dto.GreetingResponse"
                             }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ProblemDetail"
                         }
                     }
                 }
@@ -140,7 +152,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/model.HealthStatus"
+                            "$ref": "#/definitions/dto.HealthStatus"
                         }
                     }
                 }
@@ -163,7 +175,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/model.HealthStatus"
+                            "$ref": "#/definitions/dto.HealthStatus"
                         }
                     }
                 }
@@ -171,24 +183,8 @@ const docTemplate = `{
         }
     },
     "definitions": {
-        "model.Greeting": {
-            "description": "Greeting model",
-            "type": "object",
-            "required": [
-                "message"
-            ],
-            "properties": {
-                "message": {
-                    "description": "Message is the greeting text",
-                    "type": "string",
-                    "maxLength": 100,
-                    "minLength": 3,
-                    "example": "Hello, World!"
-                }
-            }
-        },
-        "model.GreetingInput": {
-            "description": "Input model for creating a new greeting",
+        "dto.GreetingInput": {
+            "description": "Input dto for creating a new greeting",
             "type": "object",
             "required": [
                 "message"
@@ -203,8 +199,30 @@ const docTemplate = `{
                 }
             }
         },
-        "model.HealthStatus": {
-            "description": "Health status model",
+        "dto.GreetingResponse": {
+            "description": "Greeting dto",
+            "type": "object",
+            "required": [
+                "id",
+                "message"
+            ],
+            "properties": {
+                "id": {
+                    "description": "ID of the greeting",
+                    "type": "integer",
+                    "example": 1
+                },
+                "message": {
+                    "description": "Message is the greeting text",
+                    "type": "string",
+                    "maxLength": 100,
+                    "minLength": 3,
+                    "example": "Hello, World!"
+                }
+            }
+        },
+        "dto.HealthStatus": {
+            "description": "Health status dto",
             "type": "object",
             "required": [
                 "status"
@@ -217,7 +235,7 @@ const docTemplate = `{
                 }
             }
         },
-        "model.ProblemDetail": {
+        "dto.ProblemDetail": {
             "type": "object",
             "properties": {
                 "detail": {
@@ -241,12 +259,12 @@ const docTemplate = `{
                 "violations": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/model.Violation"
+                        "$ref": "#/definitions/dto.Violation"
                     }
                 }
             }
         },
-        "model.Violation": {
+        "dto.Violation": {
             "type": "object",
             "properties": {
                 "code": {

@@ -27,17 +27,18 @@ func TestAddHelloRoutes(t *testing.T) {
 
 	assert.Equal(t, http.StatusOK, w.Code)
 
-	expectedResponse := `{"message":"Mocked Hello, World!"}`
+	expectedResponse := `{"id":1, "message":"Mocked Hello, World!"}`
 	assert.JSONEq(t, expectedResponse, w.Body.String())
 }
 
 func TestAddHelloRoutes_CreateGreeting(t *testing.T) {
 	gin.SetMode(gin.TestMode)
 
+	// Mock Controller
 	mockController := &mock.MockHelloController{}
 
+	// Router Setup
 	r := gin.Default()
-
 	router.AddHelloRoutes(r, mockController)
 
 	// Mocked Request Body
@@ -49,31 +50,35 @@ func TestAddHelloRoutes_CreateGreeting(t *testing.T) {
 
 	r.ServeHTTP(w, req)
 
+	// Assertions
 	assert.Equal(t, http.StatusCreated, w.Code)
 
-	expectedResponse := `{"message":"Mocked POST Greeting!"}`
+	expectedResponse := `{"id":2, "message":"Mocked POST Greeting!"}`
 	assert.JSONEq(t, expectedResponse, w.Body.String())
 }
 
 func TestAddHelloRoutes_GetAllGreetings(t *testing.T) {
 	gin.SetMode(gin.TestMode)
 
+	// Mock Controller
 	mockController := &mock.MockHelloController{}
 
+	// Router Setup
 	r := gin.Default()
-
 	router.AddHelloRoutes(r, mockController)
 
+	// Mock Request
 	req, _ := http.NewRequest(http.MethodGet, "/api/hello/all", nil)
 	w := httptest.NewRecorder()
 
 	r.ServeHTTP(w, req)
 
+	// Assertions
 	assert.Equal(t, http.StatusOK, w.Code)
 
 	expectedResponse := `[
-		{"message":"Mocked Hello, World!"},
-		{"message":"Mocked Hi!"}
+		{"id":1, "message":"Mocked Hello, World!"},
+		{"id":2, "message":"Mocked Hi!"}
 	]`
 	assert.JSONEq(t, expectedResponse, w.Body.String())
 }

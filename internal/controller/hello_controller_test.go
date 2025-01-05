@@ -2,7 +2,7 @@ package controller
 
 import (
 	"bytes"
-	"gin-samples/internal/model"
+	"gin-samples/internal/dto"
 	"github.com/gin-gonic/gin"
 	"github.com/go-playground/validator/v10"
 	"github.com/stretchr/testify/assert"
@@ -17,26 +17,26 @@ type MockHelloService struct {
 	mock.Mock
 }
 
-func (m *MockHelloService) GetGreeting() model.Greeting {
+func (m *MockHelloService) GetGreeting() dto.GreetingResponse {
 	args := m.Called()
-	return args.Get(0).(model.Greeting)
+	return args.Get(0).(dto.GreetingResponse)
 }
 
-func (m *MockHelloService) CreateGreeting(input model.GreetingInput) (model.Greeting, error) {
+func (m *MockHelloService) CreateGreeting(input dto.GreetingInput) (dto.GreetingResponse, error) {
 	args := m.Called(input)
-	return args.Get(0).(model.Greeting), args.Error(1)
+	return args.Get(0).(dto.GreetingResponse), args.Error(1)
 }
 
-func (m *MockHelloService) GetAllGreetings() []model.Greeting {
+func (m *MockHelloService) GetAllGreetings() ([]dto.GreetingResponse, error) {
 	args := m.Called()
-	return args.Get(0).([]model.Greeting)
+	return args.Get(0).([]dto.GreetingResponse), args.Error(1)
 }
 
 func TestHelloController_Hello(t *testing.T) {
 	gin.SetMode(gin.TestMode)
 
 	mockService := new(MockHelloService)
-	mockService.On("GetGreeting").Return(model.Greeting{Message: "Mock Hello"})
+	mockService.On("GetGreeting").Return(dto.GreetingResponse{ID: 1, Message: "Mock Hello"})
 
 	controller := NewHelloController(mockService, nil, nil)
 
@@ -49,7 +49,7 @@ func TestHelloController_Hello(t *testing.T) {
 	router.ServeHTTP(w, req)
 
 	assert.Equal(t, http.StatusOK, w.Code)
-	assert.JSONEq(t, `{"message": "Mock Hello"}`, w.Body.String())
+	assert.JSONEq(t, `{"id": 1, "message": "Mock Hello"}`, w.Body.String())
 
 	mockService.AssertExpectations(t)
 }
@@ -58,8 +58,8 @@ func TestHelloController_CreateGreeting(t *testing.T) {
 	gin.SetMode(gin.TestMode)
 
 	mockService := new(MockHelloService)
-	mockService.On("CreateGreeting", model.GreetingInput{Message: "Hello, Test!"}).
-		Return(model.Greeting{Message: "Hello, Test!"}, nil)
+	mockService.On("CreateGreeting", dto.GreetingInput{Message: "Hello, Test!"}).
+		Return(dto.GreetingResponse{ID: 1, Message: "Hello, Test!"}, nil)
 
 	validate := validator.New()
 	controller := NewHelloController(mockService, validate, nil)
@@ -75,7 +75,7 @@ func TestHelloController_CreateGreeting(t *testing.T) {
 	router.ServeHTTP(w, req)
 
 	assert.Equal(t, http.StatusCreated, w.Code)
-	assert.JSONEq(t, `{"message": "Hello, Test!"}`, w.Body.String())
+	assert.JSONEq(t, `{"id": 1, "message": "Hello, Test!"}`, w.Body.String())
 
 	mockService.AssertExpectations(t)
 }
@@ -84,10 +84,10 @@ func TestHelloController_GetAllGreetings(t *testing.T) {
 	gin.SetMode(gin.TestMode)
 
 	mockService := new(MockHelloService)
-	mockService.On("GetAllGreetings").Return([]model.Greeting{
-		{Message: "Mock Hello"},
-		{Message: "Mock Hi"},
-	})
+	mockService.On("GetAllGreetings").Return([]dto.GreetingResponse{
+		{ID: 1, Message: "Mock Hello"},
+		{ID: 2, Message: "Mock Hi"},
+	}, nil)
 
 	controller := NewHelloController(mockService, nil, nil)
 
@@ -99,7 +99,7 @@ func TestHelloController_GetAllGreetings(t *testing.T) {
 	router.ServeHTTP(w, req)
 
 	assert.Equal(t, http.StatusOK, w.Code)
-	expectedResponse := `[{"message": "Mock Hello"}, {"message": "Mock Hi"}]`
+	expectedResponse := `[{"id": 1, "message": "Mock Hello"}, {"id": 2, "message": "Mock Hi"}]`
 	assert.JSONEq(t, expectedResponse, w.Body.String())
 
 	mockService.AssertExpectations(t)

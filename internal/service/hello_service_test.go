@@ -2,47 +2,54 @@ package service
 
 import (
 	"errors"
+	"gin-samples/internal/dto"
+	"gin-samples/internal/entity"
 	customError "gin-samples/internal/error"
-	"gin-samples/internal/model"
+	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 	"testing"
-
-	"github.com/stretchr/testify/assert"
 )
 
-// MockHelloRepository is a simplified mock implementation of HelloRepository
+// MockHelloRepository is a mock implementation of HelloRepository
 type MockHelloRepository struct {
 	mock.Mock
 }
 
-func (m *MockHelloRepository) ExistsByMessage(message string) bool {
+func (m *MockHelloRepository) ExistsByMessage(message string) (bool, error) {
 	args := m.Called(message)
-	return args.Bool(0)
+	return args.Bool(0), args.Error(1)
 }
 
-func (m *MockHelloRepository) SaveGreeting(input model.GreetingInput) model.Greeting {
-	args := m.Called(input)
-	return args.Get(0).(model.Greeting)
+func (m *MockHelloRepository) SaveGreeting(greeting *entity.Greeting) (*entity.Greeting, error) {
+	args := m.Called(greeting)
+	if args.Get(0) == nil {
+		return nil, args.Error(1)
+	}
+	return args.Get(0).(*entity.Greeting), args.Error(1)
 }
 
-func (m *MockHelloRepository) GetAllGreetings() []model.Greeting {
+func (m *MockHelloRepository) GetAllGreetings() ([]entity.Greeting, error) {
 	args := m.Called()
-	return args.Get(0).([]model.Greeting)
+	if args.Get(0) == nil {
+		return nil, args.Error(1)
+	}
+	return args.Get(0).([]entity.Greeting), args.Error(1)
 }
 
-func (m *MockHelloRepository) FindByMessage(message string) (*model.Greeting, bool) {
+func (m *MockHelloRepository) FindByMessage(message string) (*entity.Greeting, error) {
 	args := m.Called(message)
 	if args.Get(0) == nil {
-		return nil, args.Bool(1)
+		return nil, args.Error(1)
 	}
-	return args.Get(0).(*model.Greeting), args.Bool(1)
+	return args.Get(0).(*entity.Greeting), args.Error(1)
 }
 
-func TestHelloService_GetGreeting(t *testing.T) {
-	mockRepo := new(MockHelloRepository)
-	service := NewHelloService(mockRepo)
+// Test cases for HelloService
 
-	expected := model.Greeting{Message: "Hello, World!"}
+func TestHelloService_GetGreeting(t *testing.T) {
+	service := NewHelloService(nil) // No repo needed for this method
+
+	expected := dto.GreetingResponse{ID: 0, Message: "Hello, World!"}
 	actual := service.GetGreeting()
 
 	assert.Equal(t, expected, actual, "Greeting message should match the expected value")
@@ -52,16 +59,17 @@ func TestHelloService_CreateGreeting_Success(t *testing.T) {
 	mockRepo := new(MockHelloRepository)
 	service := NewHelloService(mockRepo)
 
-	input := model.GreetingInput{Message: "Unique Greeting"}
-	expected := model.Greeting{Message: "Unique Greeting"}
+	input := dto.GreetingInput{Message: "Unique Greeting"}
+	expectedEntity := &entity.Greeting{ID: 1, Message: "Unique Greeting"}
+	expectedResponse := dto.GreetingResponse{ID: 1, Message: "Unique Greeting"}
 
-	mockRepo.On("ExistsByMessage", input.Message).Return(false)
-	mockRepo.On("SaveGreeting", input).Return(expected)
+	mockRepo.On("ExistsByMessage", input.Message).Return(false, nil)
+	mockRepo.On("SaveGreeting", mock.AnythingOfType("*entity.Greeting")).Return(expectedEntity, nil)
 
 	actual, err := service.CreateGreeting(input)
 
 	assert.NoError(t, err, "There should be no error")
-	assert.Equal(t, expected, actual, "Created greeting should match the input message")
+	assert.Equal(t, expectedResponse, actual, "Created greeting should match the expected response")
 
 	mockRepo.AssertExpectations(t)
 }
@@ -70,9 +78,9 @@ func TestHelloService_CreateGreeting_Conflict(t *testing.T) {
 	mockRepo := new(MockHelloRepository)
 	service := NewHelloService(mockRepo)
 
-	input := model.GreetingInput{Message: "Duplicate Greeting"}
+	input := dto.GreetingInput{Message: "Duplicate Greeting"}
 
-	mockRepo.On("ExistsByMessage", input.Message).Return(true)
+	mockRepo.On("ExistsByMessage", input.Message).Return(true, nil)
 
 	_, err := service.CreateGreeting(input)
 
@@ -92,16 +100,21 @@ func TestHelloService_GetAllGreetings(t *testing.T) {
 	mockRepo := new(MockHelloRepository)
 	service := NewHelloService(mockRepo)
 
-	expected := []model.Greeting{
-		{Message: "Hello, World!"},
-		{Message: "Hi there!"},
+	expectedEntities := []entity.Greeting{
+		{ID: 1, Message: "Hello, World!"},
+		{ID: 2, Message: "Hi there!"},
+	}
+	expectedResponses := []dto.GreetingResponse{
+		{ID: 1, Message: "Hello, World!"},
+		{ID: 2, Message: "Hi there!"},
 	}
 
-	mockRepo.On("GetAllGreetings").Return(expected)
+	mockRepo.On("GetAllGreetings").Return(expectedEntities, nil)
 
-	actual := service.GetAllGreetings()
+	actual, err := service.GetAllGreetings()
 
-	assert.Equal(t, expected, actual, "All greetings should match the expected list")
+	assert.NoError(t, err, "There should be no error")
+	assert.Equal(t, expectedResponses, actual, "All greetings should match the expected DTO list")
 
 	mockRepo.AssertExpectations(t)
 }
