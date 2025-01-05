@@ -3,8 +3,8 @@ package service
 import (
 	"fmt"
 	"gin-samples/internal/dto"
-	"gin-samples/internal/entity"
 	customError "gin-samples/internal/error"
+	"gin-samples/internal/mapper"
 	"gin-samples/internal/repository"
 	"gin-samples/internal/utils"
 )
@@ -16,15 +16,19 @@ type HelloService interface {
 }
 
 type helloServiceImpl struct {
-	repo  repository.HelloRepository
-	clock utils.Clock
+	repo   repository.HelloRepository
+	clock  utils.Clock
+	mapper mapper.HelloMapper
 }
 
+// NewHelloService creates a new instance of helloServiceImpl
 func NewHelloService(repo repository.HelloRepository,
+	mapper mapper.HelloMapper,
 	clock utils.Clock) HelloService {
 	return &helloServiceImpl{
-		repo:  repo,
-		clock: clock,
+		repo:   repo,
+		clock:  clock,
+		mapper: mapper,
 	}
 }
 
@@ -54,40 +58,39 @@ func (s *helloServiceImpl) CreateGreeting(input dto.GreetingInput) (dto.Greeting
 		}
 	}
 
-	// Save the new greeting
-	greeting := &entity.Greeting{
-		Message: input.Message,
+	// Map input DTO to entity
+	entity, err := s.mapper.ToGreetingEntity(input)
+	if err != nil {
+		return dto.GreetingResponse{}, fmt.Errorf("failed to map input: %w", err)
 	}
-	savedGreeting, err := s.repo.SaveGreeting(greeting)
+
+	// Save entity
+	savedEntity, err := s.repo.SaveGreeting(&entity)
 	if err != nil {
 		return dto.GreetingResponse{}, fmt.Errorf("failed to save greeting: %w", err)
 	}
 
-	// Convert entity to DTO
-	return dto.GreetingResponse{
-		ID:        savedGreeting.ID,
-		Message:   savedGreeting.Message,
-		CreatedAt: savedGreeting.CreatedAt,
-		UpdatedAt: savedGreeting.UpdatedAt,
-	}, nil
+	// Map saved entity to response DTO
+	response, err := s.mapper.ToGreetingResponse(*savedEntity)
+	if err != nil {
+		return dto.GreetingResponse{}, fmt.Errorf("failed to map entity: %w", err)
+	}
+
+	return response, nil
 }
 
 // GetAllGreetings retrieves all greetings
 func (s *helloServiceImpl) GetAllGreetings() ([]dto.GreetingResponse, error) {
-	greetings, err := s.repo.GetAllGreetings()
+	entities, err := s.repo.GetAllGreetings()
 	if err != nil {
 		return nil, fmt.Errorf("failed to fetch greetings: %w", err)
 	}
 
-	// Convert entities to DTOs
-	response := make([]dto.GreetingResponse, len(greetings))
-	for i, greeting := range greetings {
-		response[i] = dto.GreetingResponse{
-			ID:        greeting.ID,
-			Message:   greeting.Message,
-			CreatedAt: greeting.CreatedAt,
-			UpdatedAt: greeting.UpdatedAt,
-		}
+	// Map entities to response DTOs
+	responses, err := s.mapper.ToGreetingResponses(entities)
+	if err != nil {
+		return nil, fmt.Errorf("failed to map entities: %w", err)
 	}
-	return response, nil
+
+	return responses, nil
 }

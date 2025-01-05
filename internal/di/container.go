@@ -3,6 +3,7 @@ package di
 import (
 	"gin-samples/config"
 	"gin-samples/internal/controller"
+	"gin-samples/internal/mapper"
 	"gin-samples/internal/repository"
 	"gin-samples/internal/router"
 	"gin-samples/internal/service"
@@ -17,6 +18,7 @@ import (
 type Container struct {
 	DB               *gorm.DB
 	HelloRepository  repository.HelloRepository
+	HelloMapper      mapper.HelloMapper
 	HelloService     service.HelloService
 	HelloController  controller.HelloController
 	HealthController controller.HealthController
@@ -34,8 +36,11 @@ func NewContainer() *Container {
 	// Clock
 	clock := &utils.RealClock{} // Use RealClock for production
 
+	// Mapper
+	helloMapper := mapper.NewHelloMapper()
+
 	// Service
-	helloService := service.NewHelloService(helloRepository, clock)
+	helloService := service.NewHelloService(helloRepository, helloMapper, clock)
 
 	// Validator and Translator
 	validate, translator := config.NewValidator()
@@ -50,6 +55,7 @@ func NewContainer() *Container {
 	return &Container{
 		DB:               db,
 		HelloRepository:  helloRepository,
+		HelloMapper:      helloMapper,
 		HelloService:     helloService,
 		HelloController:  helloController,
 		HealthController: healthController,
