@@ -12,7 +12,7 @@ type GreetingResponse struct {
 	Message string `json:"message" example:"Hello, World!" minLength:"3" maxLength:"100" validate:"required"`
 
 	// CreatedAt is the timestamp when the greeting was created
-	CreatedAt time.Time `json:"createdAt" example:"2025-01-05T10:00:00Z"`
+	CreatedAt time.Time `json:"createdAt" example:"2025-01-05T10:00:00Z" validate:"required"`
 
 	// UpdatedAt is the timestamp when the greeting was last updated
 	UpdatedAt time.Time `json:"updatedAt" example:"2025-01-05T12:00:00Z"`

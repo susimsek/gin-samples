@@ -203,10 +203,16 @@ const docTemplate = `{
             "description": "Greeting dto",
             "type": "object",
             "required": [
+                "createdAt",
                 "id",
                 "message"
             ],
             "properties": {
+                "createdAt": {
+                    "description": "CreatedAt is the timestamp when the greeting was created",
+                    "type": "string",
+                    "example": "2025-01-05T10:00:00Z"
+                },
                 "id": {
                     "description": "ID of the greeting",
                     "type": "integer",
@@ -218,6 +224,11 @@ const docTemplate = `{
                     "maxLength": 100,
                     "minLength": 3,
                     "example": "Hello, World!"
+                },
+                "updatedAt": {
+                    "description": "UpdatedAt is the timestamp when the greeting was last updated",
+                    "type": "string",
+                    "example": "2025-01-05T12:00:00Z"
                 }
             }
         },

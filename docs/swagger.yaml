@@ -15,6 +15,10 @@ definitions:
   dto.GreetingResponse:
     description: Greeting dto
     properties:
+      createdAt:
+        description: CreatedAt is the timestamp when the greeting was created
+        example: "2025-01-05T10:00:00Z"
+        type: string
       id:
         description: ID of the greeting
         example: 1
@@ -25,7 +29,12 @@ definitions:
         maxLength: 100
         minLength: 3
         type: string
+      updatedAt:
+        description: UpdatedAt is the timestamp when the greeting was last updated
+        example: "2025-01-05T12:00:00Z"
+        type: string
     required:
+    - createdAt
     - id
     - message
     type: object
