@@ -161,7 +161,7 @@ The application will be available at `http://localhost:8080`.
 ![Go](https://img.shields.io/badge/Go-1.23-blue?logo=go&logoColor=white)  
 ![Gin Framework](https://img.shields.io/badge/Gin_Framework-000000?logo=go&logoColor=white)  
 ![Gin Swagger](https://img.shields.io/badge/Gin_Swagger-85EA2D?logo=swagger&logoColor=white)  
-![Go Playground Validator](https://img.shields.io/badge/Go_Playground_Validator-FDD835?logo=go&logoColor=white)
+![Go Playground Validator](https://img.shields.io/badge/Go_Playground_Validator-FDD835?logo=go&logoColor=white)  
 ![GORM](https://img.shields.io/badge/GORM-Go_ORM-7462FF?logo=go&logoColor=white)  
 ![SQLite](https://img.shields.io/badge/SQLite-003B57?logo=sqlite&logoColor=white)  
 ![SonarQube](https://img.shields.io/badge/SonarQube-4E9BCD?logo=sonarqube&logoColor=white)  
