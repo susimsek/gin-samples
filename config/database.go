@@ -1,22 +1,58 @@
 package config
 
 import (
-	"gin-samples/internal/entity"
+	"database/sql"
+	"errors"
+	"log"
+
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
-	"log"
+
+	"github.com/golang-migrate/migrate/v4"
+	"github.com/golang-migrate/migrate/v4/database/sqlite3"
+	_ "github.com/golang-migrate/migrate/v4/source/file" // File source driver
 )
 
 func InitDB() *gorm.DB {
-	db, err := gorm.Open(sqlite.Open(":memory:"), &gorm.Config{})
+	// SQLite in-memory database with shared cache
+	sqlDB, err := sql.Open("sqlite3", ":memory:")
 	if err != nil {
-		log.Fatalf("Failed to connect to SQLite in-memory database: %v", err)
+		log.Fatalf("Failed to open SQLite database: %v", err)
 	}
 
-	err = db.AutoMigrate(&entity.Greeting{})
+	// Run migrations
+	runMigrations(sqlDB)
+
+	// Use GORM with the same database connection
+	gormDB, err := gorm.Open(sqlite.New(sqlite.Config{
+		Conn: sqlDB, // Share the same connection
+	}), &gorm.Config{})
 	if err != nil {
-		log.Fatalf("Failed to migrate database: %v", err)
+		log.Fatalf("Failed to initialize GORM: %v", err)
 	}
 
-	return db
+	return gormDB
+}
+
+func runMigrations(db *sql.DB) {
+	driver, err := sqlite3.WithInstance(db, &sqlite3.Config{})
+	if err != nil {
+		log.Fatalf("Failed to create SQLite driver: %v", err)
+	}
+
+	m, err := migrate.NewWithDatabaseInstance(
+		"file://resources/db/migrations", // Migration files path
+		"sqlite3",                        // Database driver name
+		driver,
+	)
+	if err != nil {
+		log.Fatalf("Failed to initialize migrations: %v", err)
+	}
+
+	// Apply all up migrations
+	if err := m.Up(); err != nil && !errors.Is(err, migrate.ErrNoChange) {
+		log.Fatalf("Failed to apply migrations: %v", err)
+	}
+
+	log.Println("Migrations applied successfully!")
 }

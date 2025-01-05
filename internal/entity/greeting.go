@@ -6,3 +6,7 @@ type Greeting struct {
 	Message        string `gorm:"type:text;not null;column:message"`  // Message column
 	AuditingEntity        // Embedded AuditingEntity for auditing fields
 }
+
+func (Greeting) TableName() string {
+	return "greeting"
+}
