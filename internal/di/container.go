@@ -28,7 +28,7 @@ type Container struct {
 
 func NewContainer() *Container {
 	// Repository
-	db := config.InitDB()
+	db := config.DatabaseConfig.InitDB()
 	helloRepository := repository.NewHelloRepository(db)
 
 	// Clock

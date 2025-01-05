@@ -1,6 +1,8 @@
 package di_test
 
 import (
+	"gin-samples/config"
+	"gin-samples/internal/mock"
 	"testing"
 
 	"gin-samples/internal/di"
@@ -9,6 +11,7 @@ import (
 
 func TestNewContainer(t *testing.T) {
 	// Create a new container
+	config.DatabaseConfig = &mock.MockDatabaseConfig{}
 	container := di.NewContainer()
 
 	// Ensure the container is not nil

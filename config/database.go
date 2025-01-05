@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"errors"
 	"log"
+	"path/filepath"
 
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
@@ -13,19 +14,26 @@ import (
 	_ "github.com/golang-migrate/migrate/v4/source/file" // File source driver
 )
 
-func InitDB() *gorm.DB {
-	// SQLite in-memory database with shared cache
+var DatabaseConfig DatabaseInitializer = &RealDatabaseConfig{}
+
+// DatabaseInitializer interface for initializing the database
+type DatabaseInitializer interface {
+	InitDB() *gorm.DB
+}
+
+// RealDatabaseConfig is the production implementation
+type RealDatabaseConfig struct{}
+
+func (r *RealDatabaseConfig) InitDB() *gorm.DB {
 	sqlDB, err := sql.Open("sqlite3", ":memory:")
 	if err != nil {
 		log.Fatalf("Failed to open SQLite database: %v", err)
 	}
 
-	// Run migrations
 	runMigrations(sqlDB)
 
-	// Use GORM with the same database connection
 	gormDB, err := gorm.Open(sqlite.New(sqlite.Config{
-		Conn: sqlDB, // Share the same connection
+		Conn: sqlDB,
 	}), &gorm.Config{})
 	if err != nil {
 		log.Fatalf("Failed to initialize GORM: %v", err)
@@ -40,16 +48,12 @@ func runMigrations(db *sql.DB) {
 		log.Fatalf("Failed to create SQLite driver: %v", err)
 	}
 
-	m, err := migrate.NewWithDatabaseInstance(
-		"file://resources/db/migrations", // Migration files path
-		"sqlite3",                        // Database driver name
-		driver,
-	)
+	migrationPath := filepath.Join("resources", "db", "migrations")
+	m, err := migrate.NewWithDatabaseInstance("file://"+migrationPath, "sqlite3", driver)
 	if err != nil {
 		log.Fatalf("Failed to initialize migrations: %v", err)
 	}
 
-	// Apply all up migrations
 	if err := m.Up(); err != nil && !errors.Is(err, migrate.ErrNoChange) {
 		log.Fatalf("Failed to apply migrations: %v", err)
 	}
