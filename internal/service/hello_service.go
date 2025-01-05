@@ -58,22 +58,22 @@ func (s *helloServiceImpl) CreateGreeting(input dto.GreetingInput) (dto.Greeting
 		}
 	}
 
-	// Map input DTO to entity
+	// Map input DTO to domain
 	entity, err := s.mapper.ToGreetingEntity(input)
 	if err != nil {
 		return dto.GreetingResponse{}, fmt.Errorf("failed to map input: %w", err)
 	}
 
-	// Save entity
+	// Save domain
 	savedEntity, err := s.repo.SaveGreeting(&entity)
 	if err != nil {
 		return dto.GreetingResponse{}, fmt.Errorf("failed to save greeting: %w", err)
 	}
 
-	// Map saved entity to response DTO
+	// Map saved domain to response DTO
 	response, err := s.mapper.ToGreetingResponse(*savedEntity)
 	if err != nil {
-		return dto.GreetingResponse{}, fmt.Errorf("failed to map entity: %w", err)
+		return dto.GreetingResponse{}, fmt.Errorf("failed to map domain: %w", err)
 	}
 
 	return response, nil

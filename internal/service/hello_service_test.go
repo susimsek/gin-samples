@@ -2,8 +2,8 @@ package service
 
 import (
 	"errors"
+	"gin-samples/internal/domain"
 	"gin-samples/internal/dto"
-	"gin-samples/internal/entity"
 	customError "gin-samples/internal/error"
 	customMock "gin-samples/internal/mock"
 	"github.com/stretchr/testify/assert"
@@ -39,11 +39,11 @@ func TestHelloService_CreateGreeting_Success(t *testing.T) {
 	mockClock := new(customMock.MockClock)
 
 	input := dto.GreetingInput{Message: "Unique Greeting"}
-	expectedEntity := entity.Greeting{ID: 1, Message: "Unique Greeting"}
+	expectedEntity := domain.Greeting{ID: 1, Message: "Unique Greeting"}
 	expectedResponse := dto.GreetingResponse{ID: 1, Message: "Unique Greeting"}
 
 	mockRepo.On("ExistsByMessage", input.Message).Return(false, nil)
-	mockRepo.On("SaveGreeting", mock.AnythingOfType("*entity.Greeting")).Return(&expectedEntity, nil)
+	mockRepo.On("SaveGreeting", mock.AnythingOfType("*domain.Greeting")).Return(&expectedEntity, nil)
 	mockMapper.On("ToGreetingEntity", input).Return(expectedEntity, nil)
 	mockMapper.On("ToGreetingResponse", expectedEntity).Return(expectedResponse, nil)
 
@@ -88,7 +88,7 @@ func TestHelloService_GetAllGreetings(t *testing.T) {
 	mockMapper := new(customMock.MockHelloMapper)
 	mockClock := new(customMock.MockClock)
 
-	expectedEntities := []entity.Greeting{
+	expectedEntities := []domain.Greeting{
 		{ID: 1, Message: "Hello, World!"},
 		{ID: 2, Message: "Hi there!"},
 	}
