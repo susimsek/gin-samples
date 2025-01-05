@@ -32,6 +32,11 @@ func TestSetupRouter(t *testing.T) {
 	assert.Equal(t, http.StatusOK, w.Code)
 
 	// Adjust expected response to match actual response
-	expectedResponse := `{"id":1, "message":"Mocked Hello, World!"}`
+	expectedResponse := `{
+		"id": 1,
+		"message": "Mocked Hello, World!",
+		"createdAt": "2025-01-05T10:00:00Z",
+		"updatedAt": "2025-01-05T10:00:00Z"
+	}`
 	assert.JSONEq(t, expectedResponse, w.Body.String())
 }

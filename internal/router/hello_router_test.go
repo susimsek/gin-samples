@@ -27,7 +27,12 @@ func TestAddHelloRoutes(t *testing.T) {
 
 	assert.Equal(t, http.StatusOK, w.Code)
 
-	expectedResponse := `{"id":1, "message":"Mocked Hello, World!"}`
+	expectedResponse := `{
+		"id": 1,
+		"message": "Mocked Hello, World!",
+		"createdAt": "2025-01-05T10:00:00Z",
+		"updatedAt": "2025-01-05T10:00:00Z"
+	}`
 	assert.JSONEq(t, expectedResponse, w.Body.String())
 }
 
@@ -53,7 +58,12 @@ func TestAddHelloRoutes_CreateGreeting(t *testing.T) {
 	// Assertions
 	assert.Equal(t, http.StatusCreated, w.Code)
 
-	expectedResponse := `{"id":2, "message":"Mocked POST Greeting!"}`
+	expectedResponse := `{
+		"id": 2,
+		"message": "Mocked POST Greeting!",
+		"createdAt": "2025-01-05T11:00:00Z",
+		"updatedAt": "2025-01-05T11:00:00Z"
+	}`
 	assert.JSONEq(t, expectedResponse, w.Body.String())
 }
 
@@ -77,8 +87,18 @@ func TestAddHelloRoutes_GetAllGreetings(t *testing.T) {
 	assert.Equal(t, http.StatusOK, w.Code)
 
 	expectedResponse := `[
-		{"id":1, "message":"Mocked Hello, World!"},
-		{"id":2, "message":"Mocked Hi!"}
+		{
+			"id": 1,
+			"message": "Mocked Hello, World!",
+			"createdAt": "2025-01-05T10:00:00Z",
+			"updatedAt": "2025-01-05T10:00:00Z"
+		},
+		{
+			"id": 2,
+			"message": "Mocked Hi!",
+			"createdAt": "2025-01-05T10:00:00Z",
+			"updatedAt": "2025-01-05T10:00:00Z"
+		}
 	]`
 	assert.JSONEq(t, expectedResponse, w.Body.String())
 }
