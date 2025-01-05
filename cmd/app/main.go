@@ -3,8 +3,8 @@ package main
 import (
 	"gin-samples/config"
 	_ "gin-samples/docs"
+	"gin-samples/internal/banner"
 	"gin-samples/internal/di"
-	"gin-samples/pkg/banner"
 	"log"
 )
 
