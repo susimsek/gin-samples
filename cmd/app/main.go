@@ -3,7 +3,6 @@ package main
 import (
 	"gin-samples/config"
 	_ "gin-samples/docs"
-	"gin-samples/internal/banner"
 	"gin-samples/internal/di"
 	"log"
 )
@@ -24,7 +23,6 @@ import (
 // @BasePath /
 func main() {
 	cfg := config.LoadConfig()
-	banner.PrintBanner("resources/banner.txt")
 	container := di.NewContainer()
 	run(":"+cfg.ServerPort, container)
 }
