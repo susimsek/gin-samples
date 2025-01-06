@@ -15,6 +15,7 @@ type HelloService interface {
 	GetAllGreetings() ([]dto.GreetingResponse, error)
 	GetGreetingByID(id uint) (dto.GreetingResponse, error)
 	UpdateGreeting(id uint, input dto.GreetingInput) (dto.GreetingResponse, error)
+	DeleteGreeting(id uint) error
 }
 
 type helloServiceImpl struct {
@@ -124,4 +125,27 @@ func (s *helloServiceImpl) UpdateGreeting(id uint, input dto.GreetingInput) (dto
 
 	// Map the updated entity to response DTO
 	return s.mapper.ToGreetingResponse(updatedEntity), nil
+}
+
+func (s *helloServiceImpl) DeleteGreeting(id uint) error {
+	// Check if the greeting exists
+	optionalEntity, err := s.repo.FindByID(id)
+	if err != nil {
+		return fmt.Errorf("failed to fetch greeting by ID: %w", err)
+	}
+
+	if optionalEntity.IsEmpty() {
+		return &customError.ResourceNotFoundError{
+			Resource: "Greeting",
+			Criteria: "id",
+			Value:    fmt.Sprintf("%d", id),
+		}
+	}
+
+	// Delete the entity
+	if err := s.repo.DeleteByID(id); err != nil {
+		return fmt.Errorf("failed to delete greeting: %w", err)
+	}
+
+	return nil
 }

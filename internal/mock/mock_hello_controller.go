@@ -95,3 +95,17 @@ func (m *MockHelloController) UpdateGreeting(c *gin.Context) {
 		UpdatedAt: fixedTime,
 	})
 }
+
+// DeleteGreeting simulates deleting a greeting by its ID
+func (m *MockHelloController) DeleteGreeting(c *gin.Context) {
+	idParam := c.Param("id")
+	if idParam == "1" {
+		// Simulate successful deletion
+		c.JSON(http.StatusNoContent, gin.H{}) // No Content response
+	} else {
+		// Simulate not found scenario
+		c.JSON(http.StatusNotFound, gin.H{
+			"error": "Greeting not found",
+		})
+	}
+}

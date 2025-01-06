@@ -43,6 +43,11 @@ func (m *MockHelloService) UpdateGreeting(id uint, input dto.GreetingInput) (dto
 	return args.Get(0).(dto.GreetingResponse), args.Error(1)
 }
 
+func (m *MockHelloService) DeleteGreeting(id uint) error {
+	args := m.Called(id)
+	return args.Error(0)
+}
+
 func TestHelloController_Hello(t *testing.T) {
 	gin.SetMode(gin.TestMode)
 
@@ -243,6 +248,29 @@ func TestHelloController_UpdateGreeting_Success(t *testing.T) {
 		"updatedAt": "2025-01-06T12:00:00Z"
 	}`
 	assert.JSONEq(t, expectedResponse, w.Body.String())
+
+	mockService.AssertExpectations(t)
+}
+
+func TestHelloController_DeleteGreeting_Success(t *testing.T) {
+	gin.SetMode(gin.TestMode)
+
+	// Mock Service
+	mockService := new(MockHelloService)
+	mockService.On("DeleteGreeting", uint(1)).Return(nil)
+
+	// Controller Setup
+	controller := NewHelloController(mockService, nil, nil)
+	router := gin.Default()
+	router.DELETE("/api/hello/:id", controller.DeleteGreeting)
+
+	// Mock Request
+	req, _ := http.NewRequest("DELETE", "/api/hello/1", nil)
+	w := httptest.NewRecorder()
+	router.ServeHTTP(w, req)
+
+	// Assertions
+	assert.Equal(t, http.StatusNoContent, w.Code)
 
 	mockService.AssertExpectations(t)
 }

@@ -18,6 +18,7 @@ type HelloController interface {
 	GetAllGreetings(c *gin.Context)
 	GetGreetingByID(c *gin.Context)
 	UpdateGreeting(c *gin.Context)
+	DeleteGreeting(c *gin.Context)
 }
 
 type helloControllerImpl struct {
@@ -198,4 +199,45 @@ func (h *helloControllerImpl) UpdateGreeting(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, updatedGreeting)
+}
+
+// DeleteGreeting godoc
+// @Summary Delete a greeting message by ID
+// @Description Deletes a greeting message by its ID
+// @Tags hello
+// @Accept json
+// @Produce json
+// @Param id path int true "Greeting ID"
+// @Success 204 "No Content"
+// @Failure 400 {object} dto.ProblemDetail
+// @Failure 404 {object} dto.ProblemDetail
+// @Failure 500 {object} dto.ProblemDetail
+// @Router /api/hello/{id} [delete]
+func (h *helloControllerImpl) DeleteGreeting(c *gin.Context) {
+	// Parse and validate ID from path
+	idParam := c.Param("id")
+	id, err := strconv.ParseUint(idParam, 10, 64)
+	if err != nil || id < 1 {
+		violation := dto.Violation{
+			Code:          "min",
+			Field:         "id",
+			RejectedValue: idParam,
+			Message:       "ID must be a valid integer greater than or equal to 1",
+		}
+		constraintErr := customError.ConstraintViolationError{
+			Violations: []dto.Violation{violation},
+		}
+		_ = c.Error(constraintErr)
+		return
+	}
+
+	// Call service to delete the greeting
+	err = h.HelloService.DeleteGreeting(uint(id))
+	if err != nil {
+		_ = c.Error(err)
+		return
+	}
+
+	// Return no content status
+	c.Status(http.StatusNoContent)
 }

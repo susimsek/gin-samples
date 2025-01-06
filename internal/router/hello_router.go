@@ -12,4 +12,5 @@ func AddHelloRoutes(r *gin.Engine, helloController controller.HelloController) {
 	r.POST("/api/hello", helloController.CreateGreeting)
 	r.GET("/api/hello/all", helloController.GetAllGreetings)
 	r.PUT("/api/hello/:id", helloController.UpdateGreeting)
+	r.DELETE("/api/hello/:id", helloController.DeleteGreeting)
 }
