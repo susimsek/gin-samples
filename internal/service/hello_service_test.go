@@ -43,7 +43,7 @@ func TestHelloService_CreateGreeting_Success(t *testing.T) {
 	expectedResponse := dto.GreetingResponse{ID: 1, Message: "Unique Greeting"}
 
 	mockRepo.On("ExistsByMessage", input.Message).Return(false, nil)
-	mockRepo.On("SaveGreeting", mock.AnythingOfType("*domain.Greeting")).Return(&expectedEntity, nil)
+	mockRepo.On("SaveGreeting", mock.AnythingOfType("domain.Greeting")).Return(expectedEntity, nil)
 	mockMapper.On("ToGreetingEntity", input).Return(expectedEntity, nil)
 	mockMapper.On("ToGreetingResponse", expectedEntity).Return(expectedResponse, nil)
 
