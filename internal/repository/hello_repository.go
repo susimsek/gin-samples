@@ -5,42 +5,21 @@ import (
 	"gorm.io/gorm"
 )
 
+// HelloRepository extends CrudRepository with additional methods
 type HelloRepository interface {
-	SaveGreeting(greeting domain.Greeting) (domain.Greeting, error)
-	GetAllGreetings() ([]domain.Greeting, error)
-	FindByMessage(message string) (domain.Greeting, error)
+	CrudRepository[domain.Greeting, uint]
 	ExistsByMessage(message string) (bool, error)
 }
 
 type helloRepositoryImpl struct {
-	db *gorm.DB
+	*BaseRepository[domain.Greeting, uint]
 }
 
+// NewHelloRepository creates a new instance of HelloRepository
 func NewHelloRepository(db *gorm.DB) HelloRepository {
-	return &helloRepositoryImpl{db: db}
-}
-
-func (r *helloRepositoryImpl) SaveGreeting(greeting domain.Greeting) (domain.Greeting, error) {
-	if err := r.db.Create(&greeting).Error; err != nil {
-		return domain.Greeting{}, err
+	return &helloRepositoryImpl{
+		BaseRepository: NewBaseRepository[domain.Greeting, uint](db),
 	}
-	return greeting, nil
-}
-
-func (r *helloRepositoryImpl) GetAllGreetings() ([]domain.Greeting, error) {
-	var greetings []domain.Greeting
-	if err := r.db.Find(&greetings).Error; err != nil {
-		return nil, err
-	}
-	return greetings, nil
-}
-
-func (r *helloRepositoryImpl) FindByMessage(message string) (domain.Greeting, error) {
-	var greeting domain.Greeting
-	if err := r.db.Where("message = ?", message).First(&greeting).Error; err != nil {
-		return domain.Greeting{}, err
-	}
-	return greeting, nil
 }
 
 func (r *helloRepositoryImpl) ExistsByMessage(message string) (bool, error) {

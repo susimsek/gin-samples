@@ -16,9 +16,11 @@ const (
 	TypeAboutBlank           = "about:blank"
 	ErrorInvalidRequest      = "invalid_request"
 	ErrorResourceConflict    = "resource_conflict"
+	ErrorResourceNotFound    = "resource_not_found" // Yeni hata tipi
 	ErrorInternalServer      = "server_error"
 	TitleBadRequest          = "Bad Request"
 	TitleConflict            = "Conflict"
+	TitleNotFound            = "Not Found"
 	TitleInternalServerError = "Internal Server Error"
 )
 
@@ -46,6 +48,9 @@ func handleErrors(c *gin.Context, trans ut.Translator) dto.ProblemDetail {
 		if problemDetail, ok := handleConflictErrors(err, c); ok {
 			return problemDetail
 		}
+		if problemDetail, ok := handleNotFoundErrors(err, c); ok { // Yeni hata tipi
+			return problemDetail
+		}
 	}
 
 	return handleInternalServerError(c)
@@ -58,7 +63,7 @@ func handleMessageNotReadableError(err *gin.Error, c *gin.Context) (dto.ProblemD
 			Type:     TypeAboutBlank,
 			Title:    TitleBadRequest,
 			Status:   http.StatusBadRequest,
-			Detail:   "The request message could not be read. Please check the format and try again.", // Sabit mesaj
+			Detail:   "The request message could not be read. Please check the format and try again.",
 			Error:    ErrorInvalidRequest,
 			Instance: c.Request.URL.Path,
 		}, true
@@ -102,6 +107,21 @@ func handleConflictErrors(err *gin.Error, c *gin.Context) (dto.ProblemDetail, bo
 			Status:   http.StatusConflict,
 			Detail:   conflictErr.Error(),
 			Error:    ErrorResourceConflict,
+			Instance: c.Request.URL.Path,
+		}, true
+	}
+	return dto.ProblemDetail{}, false
+}
+
+func handleNotFoundErrors(err *gin.Error, c *gin.Context) (dto.ProblemDetail, bool) {
+	var notFoundErr *customError.ResourceNotFoundError
+	if errors.As(err.Err, &notFoundErr) {
+		return dto.ProblemDetail{
+			Type:     TypeAboutBlank,
+			Title:    TitleNotFound,
+			Status:   http.StatusNotFound,
+			Detail:   notFoundErr.Error(),
+			Error:    ErrorResourceNotFound,
 			Instance: c.Request.URL.Path,
 		}, true
 	}

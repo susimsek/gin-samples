@@ -7,7 +7,7 @@ import (
 	"gin-samples/internal/repository"
 	"gin-samples/internal/router"
 	"gin-samples/internal/service"
-	"gin-samples/internal/utils"
+	"gin-samples/internal/util"
 	"gorm.io/gorm"
 
 	"github.com/gin-gonic/gin"
@@ -25,7 +25,7 @@ type Container struct {
 	Router           *gin.Engine
 	Validator        *validator.Validate
 	Translator       ut.Translator
-	Clock            utils.Clock
+	Clock            util.Clock
 }
 
 func NewContainer() *Container {
@@ -34,7 +34,7 @@ func NewContainer() *Container {
 	helloRepository := repository.NewHelloRepository(db)
 
 	// Clock
-	clock := &utils.RealClock{} // Use RealClock for production
+	clock := &util.RealClock{} // Use RealClock for production
 
 	// Mapper
 	helloMapper := mapper.NewHelloMapper()

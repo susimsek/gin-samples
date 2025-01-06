@@ -33,6 +33,11 @@ func (m *MockHelloService) GetAllGreetings() ([]dto.GreetingResponse, error) {
 	return args.Get(0).([]dto.GreetingResponse), args.Error(1)
 }
 
+func (m *MockHelloService) GetGreetingByID(id uint) (dto.GreetingResponse, error) {
+	args := m.Called(id)
+	return args.Get(0).(dto.GreetingResponse), args.Error(1)
+}
+
 func TestHelloController_Hello(t *testing.T) {
 	gin.SetMode(gin.TestMode)
 
