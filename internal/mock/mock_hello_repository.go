@@ -15,12 +15,12 @@ func (m *MockHelloRepository) ExistsByMessage(message string) (bool, error) {
 	return args.Bool(0), args.Error(1)
 }
 
-func (m *MockHelloRepository) SaveGreeting(greeting *domain.Greeting) (*domain.Greeting, error) {
+func (m *MockHelloRepository) SaveGreeting(greeting domain.Greeting) (domain.Greeting, error) {
 	args := m.Called(greeting)
 	if args.Get(0) == nil {
-		return nil, args.Error(1)
+		return domain.Greeting{}, args.Error(1)
 	}
-	return args.Get(0).(*domain.Greeting), args.Error(1)
+	return args.Get(0).(domain.Greeting), args.Error(1)
 }
 
 func (m *MockHelloRepository) GetAllGreetings() ([]domain.Greeting, error) {
@@ -31,10 +31,10 @@ func (m *MockHelloRepository) GetAllGreetings() ([]domain.Greeting, error) {
 	return args.Get(0).([]domain.Greeting), args.Error(1)
 }
 
-func (m *MockHelloRepository) FindByMessage(message string) (*domain.Greeting, error) {
+func (m *MockHelloRepository) FindByMessage(message string) (domain.Greeting, error) {
 	args := m.Called(message)
 	if args.Get(0) == nil {
-		return nil, args.Error(1)
+		return domain.Greeting{}, args.Error(1)
 	}
-	return args.Get(0).(*domain.Greeting), args.Error(1)
+	return args.Get(0).(domain.Greeting), args.Error(1)
 }

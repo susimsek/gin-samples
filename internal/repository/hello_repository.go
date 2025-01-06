@@ -6,9 +6,9 @@ import (
 )
 
 type HelloRepository interface {
-	SaveGreeting(greeting *domain.Greeting) (*domain.Greeting, error)
+	SaveGreeting(greeting domain.Greeting) (domain.Greeting, error)
 	GetAllGreetings() ([]domain.Greeting, error)
-	FindByMessage(message string) (*domain.Greeting, error)
+	FindByMessage(message string) (domain.Greeting, error)
 	ExistsByMessage(message string) (bool, error)
 }
 
@@ -20,9 +20,9 @@ func NewHelloRepository(db *gorm.DB) HelloRepository {
 	return &helloRepositoryImpl{db: db}
 }
 
-func (r *helloRepositoryImpl) SaveGreeting(greeting *domain.Greeting) (*domain.Greeting, error) {
-	if err := r.db.Create(greeting).Error; err != nil {
-		return nil, err
+func (r *helloRepositoryImpl) SaveGreeting(greeting domain.Greeting) (domain.Greeting, error) {
+	if err := r.db.Create(&greeting).Error; err != nil {
+		return domain.Greeting{}, err
 	}
 	return greeting, nil
 }
@@ -35,12 +35,12 @@ func (r *helloRepositoryImpl) GetAllGreetings() ([]domain.Greeting, error) {
 	return greetings, nil
 }
 
-func (r *helloRepositoryImpl) FindByMessage(message string) (*domain.Greeting, error) {
+func (r *helloRepositoryImpl) FindByMessage(message string) (domain.Greeting, error) {
 	var greeting domain.Greeting
 	if err := r.db.Where("message = ?", message).First(&greeting).Error; err != nil {
-		return nil, err
+		return domain.Greeting{}, err
 	}
-	return &greeting, nil
+	return greeting, nil
 }
 
 func (r *helloRepositoryImpl) ExistsByMessage(message string) (bool, error) {
