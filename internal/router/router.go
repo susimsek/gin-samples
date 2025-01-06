@@ -24,7 +24,7 @@ func SetupRouter(helloController controller.HelloController,
 	AddHealthRoutes(r, healthController)
 
 	// Swagger route
-	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
+	r.GET("/swagger-ui/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
 	return r
 }

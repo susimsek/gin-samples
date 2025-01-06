@@ -136,7 +136,7 @@ sonar-scanner
 
 To view the API documentation, access the Swagger UI at:
 
-http://localhost:8080/swagger/index.html
+http://localhost:8080/swagger-ui/index.html
 
 ## 🐳 Docker
 
