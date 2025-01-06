@@ -49,35 +49,61 @@ definitions:
     - status
     type: object
   dto.ProblemDetail:
+    description: Represents a structured error response for the API
     properties:
       detail:
+        description: Detail provides a more detailed explanation of the error
+        example: One or more fields failed validation
         type: string
       error:
+        description: Error is a machine-readable error code
+        example: invalid_request
         type: string
       instance:
+        description: Instance is a URI that identifies the specific occurrence of
+          the error
+        example: /api/hello
         type: string
       status:
+        description: HTTP status code for the error
+        example: 400
         type: integer
       title:
+        description: Title is a short, human-readable summary of the error
+        example: Validation Error
         type: string
       type:
+        description: Type of the error, usually a URI identifying the error type
+        example: about:blank
         type: string
       violations:
+        description: Violations is a list of validation errors (optional)
         items:
           $ref: '#/definitions/dto.Violation'
         type: array
     type: object
   dto.Violation:
+    description: Represents a single validation error for a field
     properties:
       code:
+        description: Code of the validation rule that was violated
+        example: min
         type: string
       field:
+        description: Field that failed validation
+        example: message
         type: string
       message:
+        description: Error message for the violation
+        example: The message must be at least 3 characters long
         type: string
       object:
+        description: Object that contains the field (optional)
+        example: GreetingInput
         type: string
       rejectedValue:
+        description: Rejected value of the field
+        example: Hi
         type: string
     type: object
 host: localhost:8080

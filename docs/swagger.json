@@ -393,27 +393,41 @@
             }
         },
         "dto.ProblemDetail": {
+            "description": "Represents a structured error response for the API",
             "type": "object",
             "properties": {
                 "detail": {
-                    "type": "string"
+                    "description": "Detail provides a more detailed explanation of the error",
+                    "type": "string",
+                    "example": "One or more fields failed validation"
                 },
                 "error": {
-                    "type": "string"
+                    "description": "Error is a machine-readable error code",
+                    "type": "string",
+                    "example": "invalid_request"
                 },
                 "instance": {
-                    "type": "string"
+                    "description": "Instance is a URI that identifies the specific occurrence of the error",
+                    "type": "string",
+                    "example": "/api/hello"
                 },
                 "status": {
-                    "type": "integer"
+                    "description": "HTTP status code for the error",
+                    "type": "integer",
+                    "example": 400
                 },
                 "title": {
-                    "type": "string"
+                    "description": "Title is a short, human-readable summary of the error",
+                    "type": "string",
+                    "example": "Validation Error"
                 },
                 "type": {
-                    "type": "string"
+                    "description": "Type of the error, usually a URI identifying the error type",
+                    "type": "string",
+                    "example": "about:blank"
                 },
                 "violations": {
+                    "description": "Violations is a list of validation errors (optional)",
                     "type": "array",
                     "items": {
                         "$ref": "#/definitions/dto.Violation"
@@ -422,22 +436,33 @@
             }
         },
         "dto.Violation": {
+            "description": "Represents a single validation error for a field",
             "type": "object",
             "properties": {
                 "code": {
-                    "type": "string"
+                    "description": "Code of the validation rule that was violated",
+                    "type": "string",
+                    "example": "min"
                 },
                 "field": {
-                    "type": "string"
+                    "description": "Field that failed validation",
+                    "type": "string",
+                    "example": "message"
                 },
                 "message": {
-                    "type": "string"
+                    "description": "Error message for the violation",
+                    "type": "string",
+                    "example": "The message must be at least 3 characters long"
                 },
                 "object": {
-                    "type": "string"
+                    "description": "Object that contains the field (optional)",
+                    "type": "string",
+                    "example": "GreetingInput"
                 },
                 "rejectedValue": {
-                    "type": "string"
+                    "description": "Rejected value of the field",
+                    "type": "string",
+                    "example": "Hi"
                 }
             }
         }
