@@ -51,3 +51,21 @@ func (m *MockHelloController) GetAllGreetings(c *gin.Context) {
 	}
 	c.JSON(http.StatusOK, mockGreetings)
 }
+
+// GetGreetingByID simulates retrieving a greeting by its ID
+func (m *MockHelloController) GetGreetingByID(c *gin.Context) {
+	idParam := c.Param("id")
+	if idParam == "1" {
+		fixedTime := time.Date(2025, 1, 5, 10, 0, 0, 0, time.UTC)
+		c.JSON(http.StatusOK, dto.GreetingResponse{
+			ID:        1,
+			Message:   "Mocked Hello, World!",
+			CreatedAt: fixedTime,
+			UpdatedAt: fixedTime,
+		})
+	} else {
+		c.JSON(http.StatusNotFound, gin.H{
+			"error": "Greeting not found",
+		})
+	}
+}

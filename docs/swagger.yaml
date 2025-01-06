@@ -146,6 +146,39 @@ paths:
       summary: Create a new greeting message
       tags:
       - hello
+  /api/hello/{id}:
+    get:
+      consumes:
+      - application/json
+      description: Returns a single greeting message by its ID
+      parameters:
+      - description: Greeting ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.GreetingResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/dto.ProblemDetail'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/dto.ProblemDetail'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/dto.ProblemDetail'
+      summary: Get a greeting by ID
+      tags:
+      - hello
   /api/hello/all:
     get:
       consumes:

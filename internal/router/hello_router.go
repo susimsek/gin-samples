@@ -8,6 +8,7 @@ import (
 
 func AddHelloRoutes(r *gin.Engine, helloController controller.HelloController) {
 	r.GET("/api/hello", helloController.Hello)
+	r.GET("/api/hello/:id", helloController.GetGreetingByID)
 	r.POST("/api/hello", helloController.CreateGreeting)
 	r.GET("/api/hello/all", helloController.GetAllGreetings)
 }

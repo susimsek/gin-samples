@@ -57,4 +57,12 @@ func registerCustomTranslations(validate *validator.Validate, trans ut.Translato
 		t, _ := ut.T("max", fe.Field(), fe.Param())
 		return t
 	})
+
+	// Numeric
+	_ = validate.RegisterTranslation("numeric", trans, func(ut ut.Translator) error {
+		return ut.Add("numeric", "Field must be a valid number", true)
+	}, func(ut ut.Translator, fe validator.FieldError) string {
+		t, _ := ut.T("numeric", fe.Field())
+		return t
+	})
 }

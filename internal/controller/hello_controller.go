@@ -7,6 +7,7 @@ import (
 	ut "github.com/go-playground/universal-translator"
 	"github.com/go-playground/validator/v10"
 	"net/http"
+	"strconv"
 
 	"github.com/gin-gonic/gin"
 )
@@ -15,6 +16,7 @@ type HelloController interface {
 	Hello(c *gin.Context)
 	CreateGreeting(c *gin.Context)
 	GetAllGreetings(c *gin.Context)
+	GetGreetingByID(c *gin.Context)
 }
 
 type helloControllerImpl struct {
@@ -100,4 +102,44 @@ func (h *helloControllerImpl) GetAllGreetings(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, greetings)
+}
+
+// GetGreetingByID godoc
+// @Summary Get a greeting by ID
+// @Description Returns a single greeting message by its ID
+// @Tags hello
+// @Accept json
+// @Produce json
+// @Param id path int true "Greeting ID"
+// @Success 200 {object} dto.GreetingResponse
+// @Failure 400 {object} dto.ProblemDetail
+// @Failure 404 {object} dto.ProblemDetail
+// @Failure 500 {object} dto.ProblemDetail
+// @Router /api/hello/{id} [get]
+func (h *helloControllerImpl) GetGreetingByID(c *gin.Context) {
+	idParam := c.Param("id")
+	id, err := strconv.ParseUint(idParam, 10, 64)
+
+	// Handle invalid ID as a ConstraintViolationError
+	if err != nil || id < 1 {
+		violation := dto.Violation{
+			Code:          "min",
+			Field:         "id",
+			RejectedValue: idParam,
+			Message:       "ID must be a valid integer greater than or equal to 1",
+		}
+		constraintErr := customError.ConstraintViolationError{
+			Violations: []dto.Violation{violation},
+		}
+		_ = c.Error(constraintErr)
+		return
+	}
+
+	greeting, err := h.HelloService.GetGreetingByID(uint(id))
+	if err != nil {
+		_ = c.Error(err)
+		return
+	}
+
+	c.JSON(http.StatusOK, greeting)
 }

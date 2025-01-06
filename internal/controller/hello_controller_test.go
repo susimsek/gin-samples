@@ -165,3 +165,39 @@ func TestHelloController_GetAllGreetings(t *testing.T) {
 
 	mockService.AssertExpectations(t)
 }
+
+func TestHelloController_GetGreetingByID_Success(t *testing.T) {
+	gin.SetMode(gin.TestMode)
+
+	// Mock Service
+	mockService := new(MockHelloService)
+	mockService.On("GetGreetingByID", uint(1)).Return(dto.GreetingResponse{
+		ID:        1,
+		Message:   "Mock Greeting",
+		CreatedAt: time.Date(2025, 1, 5, 10, 0, 0, 0, time.UTC),
+		UpdatedAt: time.Date(2025, 1, 5, 10, 0, 0, 0, time.UTC),
+	}, nil)
+
+	// Controller Setup
+	controller := NewHelloController(mockService, nil, nil)
+	router := gin.Default()
+	router.GET("/api/hello/:id", controller.GetGreetingByID)
+
+	// Mock Request
+	req, _ := http.NewRequest("GET", "/api/hello/1", nil)
+	w := httptest.NewRecorder()
+	router.ServeHTTP(w, req)
+
+	// Assertions
+	assert.Equal(t, http.StatusOK, w.Code)
+
+	expectedResponse := `{
+		"id": 1,
+		"message": "Mock Greeting",
+		"createdAt": "2025-01-05T10:00:00Z",
+		"updatedAt": "2025-01-05T10:00:00Z"
+	}`
+	assert.JSONEq(t, expectedResponse, w.Body.String())
+
+	mockService.AssertExpectations(t)
+}

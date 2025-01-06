@@ -22,6 +22,7 @@ const (
 	TitleConflict            = "Conflict"
 	TitleNotFound            = "Not Found"
 	TitleInternalServerError = "Internal Server Error"
+	DetailValidationError    = "Validation error occurred."
 )
 
 // ErrorHandlingMiddleware handles and formats errors in the application.
@@ -43,6 +44,9 @@ func handleErrors(c *gin.Context, trans ut.Translator) dto.ProblemDetail {
 			return problemDetail
 		}
 		if problemDetail, ok := handleValidationErrors(err, c, trans); ok {
+			return problemDetail
+		}
+		if problemDetail, ok := handleConstraintViolationErrors(err, c); ok {
 			return problemDetail
 		}
 		if problemDetail, ok := handleConflictErrors(err, c); ok {
@@ -89,10 +93,26 @@ func handleValidationErrors(err *gin.Error, c *gin.Context, trans ut.Translator)
 			Type:       TypeAboutBlank,
 			Title:      TitleBadRequest,
 			Status:     http.StatusBadRequest,
-			Detail:     "Validation error occurred.",
+			Detail:     DetailValidationError,
 			Error:      ErrorInvalidRequest,
 			Instance:   c.Request.URL.Path,
 			Violations: violations,
+		}, true
+	}
+	return dto.ProblemDetail{}, false
+}
+
+func handleConstraintViolationErrors(err *gin.Error, c *gin.Context) (dto.ProblemDetail, bool) {
+	var constraintErr customError.ConstraintViolationError
+	if errors.As(err.Err, &constraintErr) {
+		return dto.ProblemDetail{
+			Type:       TypeAboutBlank,
+			Title:      TitleBadRequest,
+			Status:     http.StatusBadRequest,
+			Detail:     DetailValidationError,
+			Error:      ErrorInvalidRequest,
+			Instance:   c.Request.URL.Path,
+			Violations: constraintErr.Violations,
 		}, true
 	}
 	return dto.ProblemDetail{}, false

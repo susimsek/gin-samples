@@ -3,7 +3,7 @@ package dto
 // Violation represents a single validation error
 type Violation struct {
 	Code          string `json:"code"`
-	Object        string `json:"object"`
+	Object        string `json:"object,omitempty"`
 	Field         string `json:"field"`
 	RejectedValue string `json:"rejectedValue"`
 	Message       string `json:"message"`
