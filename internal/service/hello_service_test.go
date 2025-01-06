@@ -173,3 +173,93 @@ func TestHelloService_GetGreetingByID_RepoError(t *testing.T) {
 
 	mockRepo.AssertExpectations(t)
 }
+
+func TestHelloService_UpdateGreeting_Success(t *testing.T) {
+	mockRepo := new(customMock.MockHelloRepository)
+	mockMapper := new(customMock.MockHelloMapper)
+	mockClock := new(customMock.MockClock)
+
+	// Mock data
+	existingEntity := domain.Greeting{ID: 1, Message: "Old Message"}
+	updatedEntity := domain.Greeting{ID: 1, Message: "Updated Message"}
+	input := dto.GreetingInput{Message: "Updated Message"}
+	expectedResponse := dto.GreetingResponse{ID: 1, Message: "Updated Message"}
+
+	// Mock expectations
+	mockRepo.On("FindByID", uint(1)).Return(util.Optional[domain.Greeting]{Value: &existingEntity}, nil)
+	mockMapper.On("PartialUpdateGreeting", &existingEntity, input)
+	mockRepo.On("Save", existingEntity).Return(updatedEntity, nil)
+	mockMapper.On("ToGreetingResponse", updatedEntity).Return(expectedResponse, nil)
+
+	service := NewHelloService(mockRepo, mockMapper, mockClock)
+
+	// Call the method under test
+	actual, err := service.UpdateGreeting(1, input)
+
+	// Assertions
+	assert.NoError(t, err, "There should be no error")
+	assert.Equal(t, expectedResponse, actual, "Updated greeting should match the expected response")
+
+	// Verify mock expectations
+	mockRepo.AssertExpectations(t)
+	mockMapper.AssertExpectations(t)
+}
+
+func TestHelloService_UpdateGreeting_NotFound(t *testing.T) {
+	mockRepo := new(customMock.MockHelloRepository)
+	mockMapper := new(customMock.MockHelloMapper)
+	mockClock := new(customMock.MockClock)
+
+	// Mock data
+	input := dto.GreetingInput{Message: "Updated Message"}
+
+	// Mock expectations
+	mockRepo.On("FindByID", uint(1)).Return(util.Optional[domain.Greeting]{Value: nil}, nil)
+
+	service := NewHelloService(mockRepo, mockMapper, mockClock)
+
+	// Call the method under test
+	_, err := service.UpdateGreeting(1, input)
+
+	// Assertions
+	assert.Error(t, err, "An error should be returned when greeting is not found")
+	assert.IsType(t, &customError.ResourceNotFoundError{}, err, "Error should be of type ResourceNotFoundError")
+
+	var notFoundErr *customError.ResourceNotFoundError
+	if errors.As(err, &notFoundErr) {
+		assert.Equal(t, "Greeting", notFoundErr.Resource, "Resource should be 'Greeting'")
+		assert.Equal(t, "id", notFoundErr.Criteria, "Criteria should be 'id'")
+		assert.Equal(t, "1", notFoundErr.Value, "Value should match the missing ID")
+	}
+
+	// Verify mock expectations
+	mockRepo.AssertExpectations(t)
+}
+
+func TestHelloService_UpdateGreeting_RepoError(t *testing.T) {
+	mockRepo := new(customMock.MockHelloRepository)
+	mockMapper := new(customMock.MockHelloMapper)
+	mockClock := new(customMock.MockClock)
+
+	// Mock data
+	existingEntity := domain.Greeting{ID: 1, Message: "Old Message"}
+	input := dto.GreetingInput{Message: "Updated Message"}
+
+	// Mock expectations
+	mockRepo.On("FindByID", uint(1)).Return(util.Optional[domain.Greeting]{Value: &existingEntity}, nil)
+	mockMapper.On("PartialUpdateGreeting", &existingEntity, input)
+	mockRepo.On("Save", existingEntity).Return(domain.Greeting{}, errors.New("database error"))
+
+	service := NewHelloService(mockRepo, mockMapper, mockClock)
+
+	// Call the method under test
+	_, err := service.UpdateGreeting(1, input)
+
+	// Assertions
+	assert.Error(t, err, "An error should be returned when repository fails")
+	assert.ErrorContains(t, err, "database error", "Error should contain the expected repository error")
+
+	// Verify mock expectations
+	mockRepo.AssertExpectations(t)
+	mockMapper.AssertExpectations(t)
+}

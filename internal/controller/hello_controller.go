@@ -17,6 +17,7 @@ type HelloController interface {
 	CreateGreeting(c *gin.Context)
 	GetAllGreetings(c *gin.Context)
 	GetGreetingByID(c *gin.Context)
+	UpdateGreeting(c *gin.Context)
 }
 
 type helloControllerImpl struct {
@@ -142,4 +143,59 @@ func (h *helloControllerImpl) GetGreetingByID(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, greeting)
+}
+
+// UpdateGreeting godoc
+// @Summary Update a greeting message by ID
+// @Description Updates a greeting message by its ID
+// @Tags hello
+// @Accept json
+// @Produce json
+// @Param id path int true "Greeting ID"
+// @Param input body dto.GreetingInput true "Greeting Input"
+// @Success 200 {object} dto.GreetingResponse
+// @Failure 400 {object} dto.ProblemDetail
+// @Failure 404 {object} dto.ProblemDetail
+// @Failure 500 {object} dto.ProblemDetail
+// @Router /api/hello/{id} [put]
+func (h *helloControllerImpl) UpdateGreeting(c *gin.Context) {
+	// Parse and validate ID from path
+	idParam := c.Param("id")
+	id, err := strconv.ParseUint(idParam, 10, 64)
+	if err != nil || id < 1 {
+		violation := dto.Violation{
+			Code:          "min",
+			Field:         "id",
+			RejectedValue: idParam,
+			Message:       "ID must be a valid integer greater than or equal to 1",
+		}
+		constraintErr := customError.ConstraintViolationError{
+			Violations: []dto.Violation{violation},
+		}
+		_ = c.Error(constraintErr)
+		return
+	}
+
+	// Parse and validate input body
+	var input dto.GreetingInput
+	if err := c.ShouldBindJSON(&input); err != nil {
+		_ = c.Error(&customError.MessageNotReadableError{
+			Detail: err.Error(),
+		})
+		return
+	}
+
+	if err := h.Validator.Struct(input); err != nil {
+		_ = c.Error(err)
+		return
+	}
+
+	// Call service to update the greeting
+	updatedGreeting, err := h.HelloService.UpdateGreeting(uint(id), input)
+	if err != nil {
+		_ = c.Error(err)
+		return
+	}
+
+	c.JSON(http.StatusOK, updatedGreeting)
 }

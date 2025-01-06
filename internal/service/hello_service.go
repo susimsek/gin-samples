@@ -14,6 +14,7 @@ type HelloService interface {
 	CreateGreeting(input dto.GreetingInput) (dto.GreetingResponse, error)
 	GetAllGreetings() ([]dto.GreetingResponse, error)
 	GetGreetingByID(id uint) (dto.GreetingResponse, error)
+	UpdateGreeting(id uint, input dto.GreetingInput) (dto.GreetingResponse, error)
 }
 
 type helloServiceImpl struct {
@@ -46,7 +47,6 @@ func (s *helloServiceImpl) GetGreeting() dto.GreetingResponse {
 
 // CreateGreeting creates a new greeting
 func (s *helloServiceImpl) CreateGreeting(input dto.GreetingInput) (dto.GreetingResponse, error) {
-	// Check if a greeting with the same message already exists
 	exists, err := s.repo.ExistsByMessage(input.Message)
 	if err != nil {
 		return dto.GreetingResponse{}, fmt.Errorf("failed to check existence: %w", err)
@@ -59,25 +59,13 @@ func (s *helloServiceImpl) CreateGreeting(input dto.GreetingInput) (dto.Greeting
 		}
 	}
 
-	// Map input DTO to domain
-	entity, err := s.mapper.ToGreetingEntity(input)
-	if err != nil {
-		return dto.GreetingResponse{}, fmt.Errorf("failed to map input: %w", err)
-	}
-
-	// Save domain
+	entity := s.mapper.ToGreetingEntity(input)
 	savedEntity, err := s.repo.Save(entity)
 	if err != nil {
 		return dto.GreetingResponse{}, fmt.Errorf("failed to save greeting: %w", err)
 	}
 
-	// Map saved domain to response DTO
-	response, err := s.mapper.ToGreetingResponse(savedEntity)
-	if err != nil {
-		return dto.GreetingResponse{}, fmt.Errorf("failed to map domain: %w", err)
-	}
-
-	return response, nil
+	return s.mapper.ToGreetingResponse(savedEntity), nil
 }
 
 // GetAllGreetings retrieves all greetings
@@ -87,24 +75,17 @@ func (s *helloServiceImpl) GetAllGreetings() ([]dto.GreetingResponse, error) {
 		return nil, fmt.Errorf("failed to fetch greetings: %w", err)
 	}
 
-	// Map entities to response DTOs
-	responses, err := s.mapper.ToGreetingResponses(entities)
-	if err != nil {
-		return nil, fmt.Errorf("failed to map entities: %w", err)
-	}
-
-	return responses, nil
+	return s.mapper.ToGreetingResponses(entities), nil
 }
 
-// GetGreetingByID retrieves a greeting by its ID using Optional
+// GetGreetingByID retrieves a greeting by its ID
 func (s *helloServiceImpl) GetGreetingByID(id uint) (dto.GreetingResponse, error) {
 	optionalEntity, err := s.repo.FindByID(id)
 	if err != nil {
 		return dto.GreetingResponse{}, fmt.Errorf("failed to fetch greeting by ID: %w", err)
 	}
 
-	if !optionalEntity.IsPresent() {
-		// Return ResourceNotFoundError if greeting not found
+	if optionalEntity.IsEmpty() {
 		return dto.GreetingResponse{}, &customError.ResourceNotFoundError{
 			Resource: "Greeting",
 			Criteria: "id",
@@ -112,11 +93,35 @@ func (s *helloServiceImpl) GetGreetingByID(id uint) (dto.GreetingResponse, error
 		}
 	}
 
-	// Map entity to response DTO
-	response, err := s.mapper.ToGreetingResponse(*optionalEntity.Value)
+	return s.mapper.ToGreetingResponse(*optionalEntity.Value), nil
+}
+
+// UpdateGreeting updates an existing greeting by ID
+func (s *helloServiceImpl) UpdateGreeting(id uint, input dto.GreetingInput) (dto.GreetingResponse, error) {
+	// Fetch the existing greeting
+	optionalEntity, err := s.repo.FindByID(id)
 	if err != nil {
-		return dto.GreetingResponse{}, fmt.Errorf("failed to map domain: %w", err)
+		return dto.GreetingResponse{}, fmt.Errorf("failed to fetch greeting by ID: %w", err)
 	}
 
-	return response, nil
+	if optionalEntity.IsEmpty() {
+		return dto.GreetingResponse{}, &customError.ResourceNotFoundError{
+			Resource: "Greeting",
+			Criteria: "id",
+			Value:    fmt.Sprintf("%d", id),
+		}
+	}
+
+	// Apply partial update using the mapper
+	existingEntity := optionalEntity.Value
+	s.mapper.PartialUpdateGreeting(existingEntity, input)
+
+	// Save the updated entity
+	updatedEntity, err := s.repo.Save(*existingEntity)
+	if err != nil {
+		return dto.GreetingResponse{}, fmt.Errorf("failed to update greeting: %w", err)
+	}
+
+	// Map the updated entity to response DTO
+	return s.mapper.ToGreetingResponse(updatedEntity), nil
 }

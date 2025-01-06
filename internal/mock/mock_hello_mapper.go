@@ -11,17 +11,21 @@ type MockHelloMapper struct {
 	mock.Mock
 }
 
-func (m *MockHelloMapper) ToGreetingResponse(g domain.Greeting) (dto.GreetingResponse, error) {
+func (m *MockHelloMapper) ToGreetingResponse(g domain.Greeting) dto.GreetingResponse {
 	args := m.Called(g)
-	return args.Get(0).(dto.GreetingResponse), args.Error(1)
+	return args.Get(0).(dto.GreetingResponse)
 }
 
-func (m *MockHelloMapper) ToGreetingResponses(greetings []domain.Greeting) ([]dto.GreetingResponse, error) {
+func (m *MockHelloMapper) ToGreetingResponses(greetings []domain.Greeting) []dto.GreetingResponse {
 	args := m.Called(greetings)
-	return args.Get(0).([]dto.GreetingResponse), args.Error(1)
+	return args.Get(0).([]dto.GreetingResponse)
 }
 
-func (m *MockHelloMapper) ToGreetingEntity(input dto.GreetingInput) (domain.Greeting, error) {
+func (m *MockHelloMapper) ToGreetingEntity(input dto.GreetingInput) domain.Greeting {
 	args := m.Called(input)
-	return args.Get(0).(domain.Greeting), args.Error(1)
+	return args.Get(0).(domain.Greeting)
+}
+
+func (m *MockHelloMapper) PartialUpdateGreeting(entity *domain.Greeting, input dto.GreetingInput) {
+	m.Called(entity, input)
 }

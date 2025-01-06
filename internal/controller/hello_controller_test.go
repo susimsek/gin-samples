@@ -38,6 +38,11 @@ func (m *MockHelloService) GetGreetingByID(id uint) (dto.GreetingResponse, error
 	return args.Get(0).(dto.GreetingResponse), args.Error(1)
 }
 
+func (m *MockHelloService) UpdateGreeting(id uint, input dto.GreetingInput) (dto.GreetingResponse, error) {
+	args := m.Called(id, input)
+	return args.Get(0).(dto.GreetingResponse), args.Error(1)
+}
+
 func TestHelloController_Hello(t *testing.T) {
 	gin.SetMode(gin.TestMode)
 
@@ -196,6 +201,46 @@ func TestHelloController_GetGreetingByID_Success(t *testing.T) {
 		"message": "Mock Greeting",
 		"createdAt": "2025-01-05T10:00:00Z",
 		"updatedAt": "2025-01-05T10:00:00Z"
+	}`
+	assert.JSONEq(t, expectedResponse, w.Body.String())
+
+	mockService.AssertExpectations(t)
+}
+
+func TestHelloController_UpdateGreeting_Success(t *testing.T) {
+	gin.SetMode(gin.TestMode)
+
+	// Mock Service
+	mockService := new(MockHelloService)
+	mockService.On("UpdateGreeting", uint(1), dto.GreetingInput{Message: "Updated Greeting"}).
+		Return(dto.GreetingResponse{
+			ID:        1,
+			Message:   "Updated Greeting",
+			CreatedAt: time.Date(2025, 1, 5, 10, 0, 0, 0, time.UTC),
+			UpdatedAt: time.Date(2025, 1, 6, 12, 0, 0, 0, time.UTC),
+		}, nil)
+
+	// Validator and Controller Setup
+	validate := validator.New()
+	controller := NewHelloController(mockService, validate, nil)
+	router := gin.Default()
+	router.PUT("/api/hello/:id", controller.UpdateGreeting)
+
+	// Mock Request
+	body := []byte(`{"message": "Updated Greeting"}`)
+	req, _ := http.NewRequest("PUT", "/api/hello/1", bytes.NewBuffer(body))
+	req.Header.Set("Content-Type", "application/json")
+	w := httptest.NewRecorder()
+	router.ServeHTTP(w, req)
+
+	// Assertions
+	assert.Equal(t, http.StatusOK, w.Code)
+
+	expectedResponse := `{
+		"id": 1,
+		"message": "Updated Greeting",
+		"createdAt": "2025-01-05T10:00:00Z",
+		"updatedAt": "2025-01-06T12:00:00Z"
 	}`
 	assert.JSONEq(t, expectedResponse, w.Body.String())
 

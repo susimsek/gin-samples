@@ -69,3 +69,29 @@ func (m *MockHelloController) GetGreetingByID(c *gin.Context) {
 		})
 	}
 }
+
+// UpdateGreeting simulates updating a greeting by its ID
+func (m *MockHelloController) UpdateGreeting(c *gin.Context) {
+	idParam := c.Param("id")
+	if idParam != "1" {
+		c.JSON(http.StatusNotFound, gin.H{
+			"error": "Greeting not found",
+		})
+		return
+	}
+
+	var input dto.GreetingInput
+	if err := c.ShouldBindJSON(&input); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	// Simulate the updated greeting
+	fixedTime := time.Date(2025, 1, 5, 11, 30, 0, 0, time.UTC)
+	c.JSON(http.StatusOK, dto.GreetingResponse{
+		ID:        1,
+		Message:   input.Message,
+		CreatedAt: time.Date(2025, 1, 5, 10, 0, 0, 0, time.UTC), // Keep original CreatedAt
+		UpdatedAt: fixedTime,
+	})
+}
