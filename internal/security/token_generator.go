@@ -18,7 +18,7 @@ type TokenClaims struct {
 	ExpiresAt   int64    `json:"exp"`
 	NotBefore   int64    `json:"nbf"`
 	JTI         string   `json:"jti"`
-	Issuer      string   `json:"iss"` // Issuer field added
+	Issuer      string   `json:"iss"`
 }
 
 // Token represents the JWE token structure
@@ -35,10 +35,10 @@ type TokenGenerator interface {
 }
 
 type tokenGenerator struct {
-	signKeyPair   *util.RSAKeyPair // Signing key pair
-	encKeyPair    *util.RSAKeyPair // Encryption key pair
+	signKeyPair   *util.RSAKeyPair
+	encKeyPair    *util.RSAKeyPair
 	tokenDuration time.Duration
-	issuer        string // Issuer for the token (can be configured)
+	issuer        string
 }
 
 // NewTokenGenerator creates a new instance of TokenGenerator
@@ -47,64 +47,28 @@ func NewTokenGenerator(signKeyPair, encKeyPair *util.RSAKeyPair, tokenDuration t
 		signKeyPair:   signKeyPair,
 		encKeyPair:    encKeyPair,
 		tokenDuration: tokenDuration,
-		issuer:        issuer, // Set the issuer value here
+		issuer:        issuer,
 	}
 }
 
 // Generate creates a signed and encrypted JWE token
 func (t *tokenGenerator) Generate(claims TokenClaims) (Token, error) {
 	now := time.Now().Unix()
-	expiration := now + int64(t.tokenDuration.Seconds())
+	claims = t.populateStandardClaims(claims, now)
 
-	// Populate standard claims
-	claims.IssuedAt = now
-	claims.ExpiresAt = expiration
-	claims.NotBefore = now
-	claims.JTI = uuid.NewString()
-	claims.Issuer = t.issuer // Set the issuer field
-
-	// Serialize claims to JSON
-	claimsBytes, err := json.Marshal(claims)
+	claimsBytes, err := t.serializeClaims(claims)
 	if err != nil {
-		return Token{}, errors.New("failed to serialize claims: " + err.Error())
+		return Token{}, err
 	}
 
-	// Sign the claims
-	signingKey := jose.SigningKey{Algorithm: jose.RS256, Key: t.signKeyPair.PrivateKey}
-	signer, err := jose.NewSigner(signingKey, nil)
+	signedPayload, err := t.signClaims(claimsBytes)
 	if err != nil {
-		return Token{}, errors.New("failed to create signer: " + err.Error())
+		return Token{}, err
 	}
 
-	signedObject, err := signer.Sign(claimsBytes)
+	encryptedPayload, err := t.encryptPayload(signedPayload)
 	if err != nil {
-		return Token{}, errors.New("failed to sign claims: " + err.Error())
-	}
-
-	// Serialize signed payload
-	signedPayload, err := signedObject.CompactSerialize()
-	if err != nil {
-		return Token{}, errors.New("failed to serialize signed payload: " + err.Error())
-	}
-
-	// Encrypt the signed payload
-	encrypter, err := jose.NewEncrypter(
-		jose.A256GCM,
-		jose.Recipient{Algorithm: jose.RSA_OAEP_256, Key: t.encKeyPair.PublicKey},
-		nil,
-	)
-	if err != nil {
-		return Token{}, errors.New("failed to create encrypter: " + err.Error())
-	}
-
-	encryptedObject, err := encrypter.Encrypt([]byte(signedPayload))
-	if err != nil {
-		return Token{}, errors.New("failed to encrypt payload: " + err.Error())
-	}
-
-	encryptedPayload, err := encryptedObject.CompactSerialize()
-	if err != nil {
-		return Token{}, errors.New("failed to serialize encrypted payload: " + err.Error())
+		return Token{}, err
 	}
 
 	return Token{
@@ -116,59 +80,124 @@ func (t *tokenGenerator) Generate(claims TokenClaims) (Token, error) {
 
 // Validate validates and decrypts a JWE token to extract TokenClaims
 func (t *tokenGenerator) Validate(tokenString string) (*TokenClaims, error) {
-	// Parse the encrypted token
+	decryptedBytes, err := t.decryptToken(tokenString)
+	if err != nil {
+		return nil, err
+	}
+
+	verifiedBytes, err := t.verifySignature(decryptedBytes)
+	if err != nil {
+		return nil, err
+	}
+
+	claims, err := t.deserializeClaims(verifiedBytes)
+	if err != nil {
+		return nil, err
+	}
+
+	if err := t.validateTokenClaims(claims); err != nil {
+		return nil, err
+	}
+
+	return claims, nil
+}
+
+// Private Methods
+
+func (t *tokenGenerator) populateStandardClaims(claims TokenClaims, now int64) TokenClaims {
+	claims.IssuedAt = now
+	claims.ExpiresAt = now + int64(t.tokenDuration.Seconds())
+	claims.NotBefore = now
+	claims.JTI = uuid.NewString()
+	claims.Issuer = t.issuer
+	return claims
+}
+
+func (t *tokenGenerator) serializeClaims(claims TokenClaims) ([]byte, error) {
+	claimsBytes, err := json.Marshal(claims)
+	if err != nil {
+		return nil, errors.New("failed to serialize claims: " + err.Error())
+	}
+	return claimsBytes, nil
+}
+
+func (t *tokenGenerator) signClaims(claimsBytes []byte) (string, error) {
+	signingKey := jose.SigningKey{Algorithm: jose.RS256, Key: t.signKeyPair.PrivateKey}
+	signer, err := jose.NewSigner(signingKey, nil)
+	if err != nil {
+		return "", errors.New("failed to create signer: " + err.Error())
+	}
+
+	signedObject, err := signer.Sign(claimsBytes)
+	if err != nil {
+		return "", errors.New("failed to sign claims: " + err.Error())
+	}
+
+	return signedObject.CompactSerialize()
+}
+
+func (t *tokenGenerator) encryptPayload(signedPayload string) (string, error) {
+	encrypter, err := jose.NewEncrypter(
+		jose.A256GCM,
+		jose.Recipient{Algorithm: jose.RSA_OAEP_256, Key: t.encKeyPair.PublicKey},
+		nil,
+	)
+	if err != nil {
+		return "", errors.New("failed to create encrypter: " + err.Error())
+	}
+
+	encryptedObject, err := encrypter.Encrypt([]byte(signedPayload))
+	if err != nil {
+		return "", errors.New("failed to encrypt payload: " + err.Error())
+	}
+
+	return encryptedObject.CompactSerialize()
+}
+
+func (t *tokenGenerator) decryptToken(tokenString string) ([]byte, error) {
 	keyAlgorithms := []jose.KeyAlgorithm{
 		jose.RSA_OAEP_256,
 	}
 	contentEncryption := []jose.ContentEncryption{
 		jose.A256GCM,
 	}
-
-	// Parse the encrypted token
 	object, err := jose.ParseEncrypted(tokenString, keyAlgorithms, contentEncryption)
+
 	if err != nil {
 		return nil, &customError.JwtError{Message: "Failed to parse JWE: " + err.Error()}
 	}
 
-	// Decrypt the token using the encryption key pair's private key
-	decryptedBytes, err := object.Decrypt(t.encKeyPair.PrivateKey)
-	if err != nil {
-		return nil, &customError.JwtError{Message: "Failed to decrypt JWE: " + err.Error()}
-	}
+	return object.Decrypt(t.encKeyPair.PrivateKey)
+}
 
+func (t *tokenGenerator) verifySignature(decryptedBytes []byte) ([]byte, error) {
 	signatureAlgorithms := []jose.SignatureAlgorithm{
 		jose.RS256,
 	}
-
-	// Parse the signed payload
 	signedObject, err := jose.ParseSigned(string(decryptedBytes), signatureAlgorithms)
 	if err != nil {
 		return nil, &customError.JwtError{Message: "Failed to parse signed payload: " + err.Error()}
 	}
 
-	// Verify the signature
-	verifiedBytes, err := signedObject.Verify(t.signKeyPair.PublicKey)
-	if err != nil {
-		return nil, &customError.JwtError{Message: "Signature verification failed: " + err.Error()}
-	}
+	return signedObject.Verify(t.signKeyPair.PublicKey)
+}
 
-	// Deserialize claims
+func (t *tokenGenerator) deserializeClaims(verifiedBytes []byte) (*TokenClaims, error) {
 	var claims TokenClaims
-	err = json.Unmarshal(verifiedBytes, &claims)
+	err := json.Unmarshal(verifiedBytes, &claims)
 	if err != nil {
 		return nil, &customError.JwtError{Message: "Failed to deserialize claims: " + err.Error()}
 	}
+	return &claims, nil
+}
 
-	// Validate expiration
+func (t *tokenGenerator) validateTokenClaims(claims *TokenClaims) error {
 	now := time.Now().Unix()
 	if now > claims.ExpiresAt {
-		return nil, &customError.JwtError{Message: "Token has expired"}
+		return &customError.JwtError{Message: "Token has expired"}
 	}
-
-	// Validate "not before" claim
 	if now < claims.NotBefore {
-		return nil, &customError.JwtError{Message: "Token is not valid yet"}
+		return &customError.JwtError{Message: "Token is not valid yet"}
 	}
-
-	return &claims, nil
+	return nil
 }
