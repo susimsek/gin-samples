@@ -19,7 +19,15 @@ func SetupRouter(helloController controller.HelloController,
 	r := gin.Default()
 	r.StaticFile("/favicon.ico", "./resources/favicons/favicon.ico")
 	r.Use(middleware.ErrorHandlingMiddleware(trans))
-	authenticatedGroup, adminGroup := SetupPrivateRoutes(r, tokenGenerator)
+	// Group for authenticated users (all users who have a valid JWT)
+	authenticatedGroup := r.Group("/api")
+	authenticatedGroup.Use(middleware.AuthMiddleware(tokenGenerator))
+
+	// Create an admin-specific group with additional access controls (admin check)
+	adminGroup := r.Group("/api")
+	adminGroup.Use(middleware.AuthMiddleware(tokenGenerator))
+	adminGroup.Use(middleware.AuthorityMiddleware("ROLE_ADMIN")) // Ensures only admin has access to this group
+
 	// Add Hello routes
 	AddHelloRoutes(authenticatedGroup, helloController)
 
