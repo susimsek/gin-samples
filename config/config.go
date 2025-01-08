@@ -12,6 +12,7 @@ import (
 type Config struct {
 	ServerPort    string
 	TokenDuration time.Duration
+	TokenIssuer   string
 }
 
 func LoadConfig() *Config {
@@ -30,6 +31,7 @@ func LoadConfig() *Config {
 	return &Config{
 		ServerPort:    getEnv("SERVER_PORT", "8080"),
 		TokenDuration: parseDuration("TOKEN_DURATION", "3600s"),
+		TokenIssuer:   getEnv("TOKEN_ISSUER", "https://susimsek.github.io"),
 	}
 }
 

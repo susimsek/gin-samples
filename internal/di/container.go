@@ -50,7 +50,7 @@ func NewContainer(cfg *config.Config) *Container {
 
 	// Token Generator
 	tokenGenerator := security.NewTokenGenerator(
-		signKeyPair, encKeyPair, cfg.TokenDuration)
+		signKeyPair, encKeyPair, cfg.TokenDuration, cfg.TokenIssuer)
 
 	// Services
 	helloService := service.NewHelloService(helloRepository, helloMapper, clock)

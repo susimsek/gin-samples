@@ -18,6 +18,7 @@ type TokenClaims struct {
 	ExpiresAt   int64    `json:"exp"`
 	NotBefore   int64    `json:"nbf"`
 	JTI         string   `json:"jti"`
+	Issuer      string   `json:"iss"` // Issuer field added
 }
 
 // Token represents the JWE token structure
@@ -37,14 +38,16 @@ type tokenGenerator struct {
 	signKeyPair   *util.RSAKeyPair // Signing key pair
 	encKeyPair    *util.RSAKeyPair // Encryption key pair
 	tokenDuration time.Duration
+	issuer        string // Issuer for the token (can be configured)
 }
 
 // NewTokenGenerator creates a new instance of TokenGenerator
-func NewTokenGenerator(signKeyPair, encKeyPair *util.RSAKeyPair, tokenDuration time.Duration) TokenGenerator {
+func NewTokenGenerator(signKeyPair, encKeyPair *util.RSAKeyPair, tokenDuration time.Duration, issuer string) TokenGenerator {
 	return &tokenGenerator{
 		signKeyPair:   signKeyPair,
 		encKeyPair:    encKeyPair,
 		tokenDuration: tokenDuration,
+		issuer:        issuer, // Set the issuer value here
 	}
 }
 
@@ -58,6 +61,7 @@ func (t *tokenGenerator) Generate(claims TokenClaims) (Token, error) {
 	claims.ExpiresAt = expiration
 	claims.NotBefore = now
 	claims.JTI = uuid.NewString()
+	claims.Issuer = t.issuer // Set the issuer field
 
 	// Serialize claims to JSON
 	claimsBytes, err := json.Marshal(claims)
