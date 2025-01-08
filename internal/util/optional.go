@@ -21,3 +21,8 @@ func (o Optional[T]) OrElse(defaultValue T) T {
 	}
 	return *o.Value
 }
+
+// EmptyOptional creates an Optional with no value (nil)
+func EmptyOptional[T any]() Optional[T] {
+	return Optional[T]{Value: nil}
+}

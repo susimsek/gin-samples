@@ -48,7 +48,7 @@ func (r *BaseRepository[T, ID]) FindByID(id ID) (util.Optional[T], error) {
 	if err := r.db.First(&entity, id).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			// Return an empty Optional if record is not found
-			return util.Optional[T]{Value: nil}, nil
+			return util.EmptyOptional[T](), nil
 		}
 		return util.Optional[T]{}, fmt.Errorf("failed to fetch entity by ID: %w", err)
 	}
