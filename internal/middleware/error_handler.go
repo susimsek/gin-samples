@@ -16,10 +16,12 @@ const (
 	TypeAboutBlank           = "about:blank"
 	ErrorInvalidRequest      = "invalid_request"
 	ErrorResourceConflict    = "resource_conflict"
-	ErrorResourceNotFound    = "resource_not_found" // Yeni hata tipi
+	ErrorResourceNotFound    = "resource_not_found"
+	ErrorAccessDenied        = "access_denied"
 	ErrorInternalServer      = "server_error"
 	TitleBadRequest          = "Bad Request"
 	TitleUnauthorized        = "Unauthorized"
+	TitleAccessDenied        = "Access Denied"
 	TitleConflict            = "Conflict"
 	TitleNotFound            = "Not Found"
 	TitleInternalServerError = "Internal Server Error"
@@ -54,6 +56,9 @@ func handleErrors(c *gin.Context, trans ut.Translator) dto.ProblemDetail {
 			return problemDetail
 		}
 		if problemDetail, ok := handleJwtErrors(err, c); ok {
+			return problemDetail
+		}
+		if problemDetail, ok := handleAccessDeniedErrors(err, c); ok {
 			return problemDetail
 		}
 		if problemDetail, ok := handleConflictErrors(err, c); ok {
@@ -149,6 +154,21 @@ func handleJwtErrors(err *gin.Error, c *gin.Context) (dto.ProblemDetail, bool) {
 			Status:   http.StatusUnauthorized,
 			Detail:   "Invalid token.",
 			Error:    "invalid_token",
+			Instance: c.Request.URL.Path,
+		}, true
+	}
+	return dto.ProblemDetail{}, false
+}
+
+func handleAccessDeniedErrors(err *gin.Error, c *gin.Context) (dto.ProblemDetail, bool) {
+	var accessDeniedErr *customError.AccessDeniedError
+	if errors.As(err.Err, &accessDeniedErr) {
+		return dto.ProblemDetail{
+			Type:     TypeAboutBlank,
+			Title:    TitleAccessDenied,
+			Status:   http.StatusForbidden,
+			Detail:   "Access denied.",
+			Error:    ErrorAccessDenied,
 			Instance: c.Request.URL.Path,
 		}, true
 	}
