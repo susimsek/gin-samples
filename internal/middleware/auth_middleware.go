@@ -10,7 +10,7 @@ import (
 // Regex pattern for Authorization header
 var authorizationPattern = regexp.MustCompile(`^Bearer (?P<token>[a-zA-Z0-9-._~+/]+=*)$`)
 
-// AuthMiddleware validates the JWT token from the Authorization header.
+// AuthMiddleware validates the JWT token from the Authorization header and sets claims in the context.
 func AuthMiddleware(tokenGenerator security.TokenGenerator) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		// Get the Authorization header
@@ -39,12 +39,15 @@ func AuthMiddleware(tokenGenerator security.TokenGenerator) gin.HandlerFunc {
 		token := matches[tokenIndex]
 
 		// Validate the token
-		_, err := tokenGenerator.Validate(token)
+		claims, err := tokenGenerator.Validate(token)
 		if err != nil {
 			_ = c.Error(&customError.JwtError{Message: "Invalid or expired token"})
 			c.Abort()
 			return
 		}
+
+		// Add the entire claims to the context
+		c.Set("jwt", claims)
 
 		// If the token is valid, continue to the next handler
 		c.Next()
