@@ -17,8 +17,9 @@ func TestAddHelloRoutes(t *testing.T) {
 	mockController := &mock.MockHelloController{}
 
 	r := gin.Default()
+	group := r.Group("/api")
 
-	router.AddHelloRoutes(r, mockController)
+	router.AddHelloRoutes(group, mockController)
 
 	req, _ := http.NewRequest(http.MethodGet, "/api/hello", nil)
 	w := httptest.NewRecorder()
@@ -44,7 +45,8 @@ func TestAddHelloRoutes_CreateGreeting(t *testing.T) {
 
 	// Router Setup
 	r := gin.Default()
-	router.AddHelloRoutes(r, mockController)
+	group := r.Group("/api")
+	router.AddHelloRoutes(group, mockController)
 
 	// Mocked Request Body
 	body := []byte(`{"message":"Mocked POST Greeting!"}`)
@@ -75,7 +77,8 @@ func TestAddHelloRoutes_GetAllGreetings(t *testing.T) {
 
 	// Router Setup
 	r := gin.Default()
-	router.AddHelloRoutes(r, mockController)
+	group := r.Group("/api")
+	router.AddHelloRoutes(group, mockController)
 
 	// Mock Request
 	req, _ := http.NewRequest(http.MethodGet, "/api/hello/all", nil)

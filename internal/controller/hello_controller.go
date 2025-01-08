@@ -43,6 +43,7 @@ func NewHelloController(service service.HelloService,
 // @Tags hello
 // @Accept json
 // @Produce json
+// @Security BearerAuth
 // @Success 200 {object} dto.GreetingResponse
 // @Failure 500 {object} dto.ProblemDetail
 // @Router /api/hello [get]
@@ -57,6 +58,7 @@ func (h *helloControllerImpl) Hello(c *gin.Context) {
 // @Tags hello
 // @Accept json
 // @Produce json
+// @Security BearerAuth
 // @Param input body dto.GreetingInput true "Greeting Input"
 // @Success 201 {object} dto.GreetingResponse
 // @Failure 400 {object} dto.ProblemDetail
@@ -93,6 +95,7 @@ func (h *helloControllerImpl) CreateGreeting(c *gin.Context) {
 // @Tags hello
 // @Accept json
 // @Produce json
+// @Security BearerAuth
 // @Success 200 {array} dto.GreetingResponse
 // @Failure 500 {object} dto.ProblemDetail
 // @Router /api/hello/all [get]
@@ -112,6 +115,7 @@ func (h *helloControllerImpl) GetAllGreetings(c *gin.Context) {
 // @Tags hello
 // @Accept json
 // @Produce json
+// @Security BearerAuth
 // @Param id path int true "Greeting ID"
 // @Success 200 {object} dto.GreetingResponse
 // @Failure 400 {object} dto.ProblemDetail
@@ -152,6 +156,7 @@ func (h *helloControllerImpl) GetGreetingByID(c *gin.Context) {
 // @Tags hello
 // @Accept json
 // @Produce json
+// @Security BearerAuth
 // @Param id path int true "Greeting ID"
 // @Param input body dto.GreetingInput true "Greeting Input"
 // @Success 200 {object} dto.GreetingResponse
@@ -207,6 +212,7 @@ func (h *helloControllerImpl) UpdateGreeting(c *gin.Context) {
 // @Tags hello
 // @Accept json
 // @Produce json
+// @Security BearerAuth
 // @Param id path int true "Greeting ID"
 // @Success 204 "No Content"
 // @Failure 400 {object} dto.ProblemDetail

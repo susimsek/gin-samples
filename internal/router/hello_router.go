@@ -6,11 +6,12 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func AddHelloRoutes(r *gin.Engine, helloController controller.HelloController) {
-	r.GET("/api/hello", helloController.Hello)
-	r.GET("/api/hello/:id", helloController.GetGreetingByID)
-	r.POST("/api/hello", helloController.CreateGreeting)
-	r.GET("/api/hello/all", helloController.GetAllGreetings)
-	r.PUT("/api/hello/:id", helloController.UpdateGreeting)
-	r.DELETE("/api/hello/:id", helloController.DeleteGreeting)
+// AddHelloRoutes sets up Hello API routes
+func AddHelloRoutes(r *gin.RouterGroup, helloController controller.HelloController) {
+	r.GET("/hello", helloController.Hello)                 // Get a greeting message
+	r.GET("/hello/:id", helloController.GetGreetingByID)   // Get a greeting by ID
+	r.POST("/hello", helloController.CreateGreeting)       // Create a new greeting
+	r.GET("/hello/all", helloController.GetAllGreetings)   // Get all greetings
+	r.PUT("/hello/:id", helloController.UpdateGreeting)    // Update a greeting by ID
+	r.DELETE("/hello/:id", helloController.DeleteGreeting) // Delete a greeting by ID
 }

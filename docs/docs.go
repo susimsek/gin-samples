@@ -24,8 +24,65 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
+        "/api/auth/login": {
+            "post": {
+                "description": "Validates user credentials and returns a JWT token",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "authentication"
+                ],
+                "summary": "Authenticate user and generate token",
+                "parameters": [
+                    {
+                        "description": "Login Input",
+                        "name": "input",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.LoginInput"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.TokenResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ProblemDetail"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ProblemDetail"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ProblemDetail"
+                        }
+                    }
+                }
+            }
+        },
         "/api/hello": {
             "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "description": "Returns a greeting message",
                 "consumes": [
                     "application/json"
@@ -53,6 +110,11 @@ const docTemplate = `{
                 }
             },
             "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "description": "Creates a new greeting",
                 "consumes": [
                     "application/json"
@@ -105,6 +167,11 @@ const docTemplate = `{
         },
         "/api/hello/all": {
             "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "description": "Returns all greeting messages",
                 "consumes": [
                     "application/json"
@@ -137,6 +204,11 @@ const docTemplate = `{
         },
         "/api/hello/{id}": {
             "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "description": "Returns a single greeting message by its ID",
                 "consumes": [
                     "application/json"
@@ -185,6 +257,11 @@ const docTemplate = `{
                 }
             },
             "put": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "description": "Updates a greeting message by its ID",
                 "consumes": [
                     "application/json"
@@ -242,6 +319,11 @@ const docTemplate = `{
                 }
             },
             "delete": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "description": "Deletes a greeting message by its ID",
                 "consumes": [
                     "application/json"
@@ -398,6 +480,30 @@ const docTemplate = `{
                 }
             }
         },
+        "dto.LoginInput": {
+            "description": "Login request DTO containing username and password",
+            "type": "object",
+            "required": [
+                "password",
+                "username"
+            ],
+            "properties": {
+                "password": {
+                    "description": "Password is the password of the user",
+                    "type": "string",
+                    "maxLength": 100,
+                    "minLength": 4,
+                    "example": "password"
+                },
+                "username": {
+                    "description": "Username is the username of the user",
+                    "type": "string",
+                    "maxLength": 50,
+                    "minLength": 3,
+                    "example": "admin"
+                }
+            }
+        },
         "dto.ProblemDetail": {
             "description": "Represents a structured error response for the API",
             "type": "object",
@@ -441,6 +547,32 @@ const docTemplate = `{
                 }
             }
         },
+        "dto.TokenResponse": {
+            "description": "JWT token response DTO",
+            "type": "object",
+            "required": [
+                "accessToken",
+                "accessTokenExpiresIn",
+                "tokenType"
+            ],
+            "properties": {
+                "accessToken": {
+                    "description": "AccessToken is the JWT access token",
+                    "type": "string",
+                    "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+                },
+                "accessTokenExpiresIn": {
+                    "description": "AccessTokenExpiresIn is the expiration time of the access token in seconds",
+                    "type": "integer",
+                    "example": 3600
+                },
+                "tokenType": {
+                    "description": "TokenType is the type of the token",
+                    "type": "string",
+                    "example": "Bearer"
+                }
+            }
+        },
         "dto.Violation": {
             "description": "Represents a single validation error for a field",
             "type": "object",
@@ -472,6 +604,14 @@ const docTemplate = `{
                 }
             }
         }
+    },
+    "securityDefinitions": {
+        "BearerAuth": {
+            "description": "JWT Authorization header using the Bearer scheme. Example: \"Authorization: Bearer {token}\"",
+            "type": "apiKey",
+            "name": "Authorization",
+            "in": "header"
+        }
     }
 }`
 
@@ -482,7 +622,7 @@ var SwaggerInfo = &swag.Spec{
 	BasePath:         "/",
 	Schemes:          []string{},
 	Title:            "Gin Samples API",
-	Description:      "This is a sample server for Gin application.",
+	Description:      "This is a sample server for Gin application with JWT authentication.",
 	InfoInstanceName: "swagger",
 	SwaggerTemplate:  docTemplate,
 	LeftDelim:        "{{",

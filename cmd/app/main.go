@@ -9,7 +9,7 @@ import (
 
 // @title Gin Samples API
 // @version 1.0
-// @description This is a sample server for Gin application.
+// @description This is a sample server for Gin application with JWT authentication.
 // @termsOfService http://example.com/terms/
 
 // @contact.name API Support
@@ -21,9 +21,17 @@ import (
 
 // @host localhost:8080
 // @BasePath /
+
+// @securityDefinitions.apikey BearerAuth
+// @type http
+// @scheme bearer
+// @bearerFormat JWT
+// @in header
+// @name Authorization
+// @description JWT Authorization header using the Bearer scheme. Example: "Authorization: Bearer {token}"
 func main() {
 	cfg := config.LoadConfig()
-	container := di.NewContainer()
+	container := di.NewContainer(cfg)
 	run(":"+cfg.ServerPort, container)
 }
 

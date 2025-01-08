@@ -19,6 +19,7 @@ const (
 	ErrorResourceNotFound    = "resource_not_found" // Yeni hata tipi
 	ErrorInternalServer      = "server_error"
 	TitleBadRequest          = "Bad Request"
+	TitleUnauthorized        = "Unauthorized"
 	TitleConflict            = "Conflict"
 	TitleNotFound            = "Not Found"
 	TitleInternalServerError = "Internal Server Error"
@@ -47,6 +48,12 @@ func handleErrors(c *gin.Context, trans ut.Translator) dto.ProblemDetail {
 			return problemDetail
 		}
 		if problemDetail, ok := handleConstraintViolationErrors(err, c); ok {
+			return problemDetail
+		}
+		if problemDetail, ok := handleInvalidCredentialsErrors(err, c); ok {
+			return problemDetail
+		}
+		if problemDetail, ok := handleJwtErrors(err, c); ok {
 			return problemDetail
 		}
 		if problemDetail, ok := handleConflictErrors(err, c); ok {
@@ -113,6 +120,36 @@ func handleConstraintViolationErrors(err *gin.Error, c *gin.Context) (dto.Proble
 			Error:      ErrorInvalidRequest,
 			Instance:   c.Request.URL.Path,
 			Violations: constraintErr.Violations,
+		}, true
+	}
+	return dto.ProblemDetail{}, false
+}
+
+func handleInvalidCredentialsErrors(err *gin.Error, c *gin.Context) (dto.ProblemDetail, bool) {
+	var invalidCredentialsErr *customError.InvalidCredentialsError
+	if errors.As(err.Err, &invalidCredentialsErr) {
+		return dto.ProblemDetail{
+			Type:     TypeAboutBlank,
+			Title:    TitleUnauthorized,
+			Status:   http.StatusUnauthorized,
+			Detail:   "Invalid username or password.",
+			Error:    "invalid_credentials",
+			Instance: c.Request.URL.Path,
+		}, true
+	}
+	return dto.ProblemDetail{}, false
+}
+
+func handleJwtErrors(err *gin.Error, c *gin.Context) (dto.ProblemDetail, bool) {
+	var jwtErr *customError.JwtError
+	if errors.As(err.Err, &jwtErr) {
+		return dto.ProblemDetail{
+			Type:     TypeAboutBlank,
+			Title:    TitleUnauthorized,
+			Status:   http.StatusUnauthorized,
+			Detail:   "Invalid token.",
+			Error:    "invalid_token",
+			Instance: c.Request.URL.Path,
 		}, true
 	}
 	return dto.ProblemDetail{}, false

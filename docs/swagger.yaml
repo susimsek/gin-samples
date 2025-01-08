@@ -48,6 +48,25 @@ definitions:
     required:
     - status
     type: object
+  dto.LoginInput:
+    description: Login request DTO containing username and password
+    properties:
+      password:
+        description: Password is the password of the user
+        example: password
+        maxLength: 100
+        minLength: 4
+        type: string
+      username:
+        description: Username is the username of the user
+        example: admin
+        maxLength: 50
+        minLength: 3
+        type: string
+    required:
+    - password
+    - username
+    type: object
   dto.ProblemDetail:
     description: Represents a structured error response for the API
     properties:
@@ -82,6 +101,27 @@ definitions:
           $ref: '#/definitions/dto.Violation'
         type: array
     type: object
+  dto.TokenResponse:
+    description: JWT token response DTO
+    properties:
+      accessToken:
+        description: AccessToken is the JWT access token
+        example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+        type: string
+      accessTokenExpiresIn:
+        description: AccessTokenExpiresIn is the expiration time of the access token
+          in seconds
+        example: 3600
+        type: integer
+      tokenType:
+        description: TokenType is the type of the token
+        example: Bearer
+        type: string
+    required:
+    - accessToken
+    - accessTokenExpiresIn
+    - tokenType
+    type: object
   dto.Violation:
     description: Represents a single validation error for a field
     properties:
@@ -112,7 +152,7 @@ info:
     email: support@example.com
     name: API Support
     url: http://example.com/contact
-  description: This is a sample server for Gin application.
+  description: This is a sample server for Gin application with JWT authentication.
   license:
     name: MIT
     url: https://opensource.org/licenses/MIT
@@ -120,6 +160,40 @@ info:
   title: Gin Samples API
   version: "1.0"
 paths:
+  /api/auth/login:
+    post:
+      consumes:
+      - application/json
+      description: Validates user credentials and returns a JWT token
+      parameters:
+      - description: Login Input
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/dto.LoginInput'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.TokenResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/dto.ProblemDetail'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/dto.ProblemDetail'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/dto.ProblemDetail'
+      summary: Authenticate user and generate token
+      tags:
+      - authentication
   /api/hello:
     get:
       consumes:
@@ -136,6 +210,8 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/dto.ProblemDetail'
+      security:
+      - BearerAuth: []
       summary: Get a greeting message
       tags:
       - hello
@@ -169,6 +245,8 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/dto.ProblemDetail'
+      security:
+      - BearerAuth: []
       summary: Create a new greeting message
       tags:
       - hello
@@ -200,6 +278,8 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/dto.ProblemDetail'
+      security:
+      - BearerAuth: []
       summary: Delete a greeting message by ID
       tags:
       - hello
@@ -232,6 +312,8 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/dto.ProblemDetail'
+      security:
+      - BearerAuth: []
       summary: Get a greeting by ID
       tags:
       - hello
@@ -270,6 +352,8 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/dto.ProblemDetail'
+      security:
+      - BearerAuth: []
       summary: Update a greeting message by ID
       tags:
       - hello
@@ -291,6 +375,8 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/dto.ProblemDetail'
+      security:
+      - BearerAuth: []
       summary: Get all greeting messages
       tags:
       - hello
@@ -324,4 +410,11 @@ paths:
       summary: Check if the application is ready
       tags:
       - health
+securityDefinitions:
+  BearerAuth:
+    description: 'JWT Authorization header using the Bearer scheme. Example: "Authorization:
+      Bearer {token}"'
+    in: header
+    name: Authorization
+    type: apiKey
 swagger: "2.0"
