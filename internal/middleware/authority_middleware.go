@@ -29,7 +29,7 @@ func AuthorityMiddleware(requiredAuthority string) gin.HandlerFunc {
 
 		// Extract authorities from the token claims
 		authorities := tokenClaims.Authorities
-		if authorities == nil || len(authorities) == 0 {
+		if len(authorities) == 0 {
 			// If "authorities" claim is missing or empty, return AccessDeniedError
 			_ = c.Error(&customError.AccessDeniedError{Message: "Access Denied: Missing authorities claim"})
 			c.Abort()
