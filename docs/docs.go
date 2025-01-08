@@ -101,6 +101,12 @@ const docTemplate = `{
                             "$ref": "#/definitions/dto.GreetingResponse"
                         }
                     },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ProblemDetail"
+                        }
+                    },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
@@ -150,6 +156,12 @@ const docTemplate = `{
                             "$ref": "#/definitions/dto.ProblemDetail"
                         }
                     },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ProblemDetail"
+                        }
+                    },
                     "409": {
                         "description": "Conflict",
                         "schema": {
@@ -191,6 +203,12 @@ const docTemplate = `{
                             "items": {
                                 "$ref": "#/definitions/dto.GreetingResponse"
                             }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ProblemDetail"
                         }
                     },
                     "500": {
@@ -238,6 +256,12 @@ const docTemplate = `{
                     },
                     "400": {
                         "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ProblemDetail"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
                         "schema": {
                             "$ref": "#/definitions/dto.ProblemDetail"
                         }
@@ -304,6 +328,12 @@ const docTemplate = `{
                             "$ref": "#/definitions/dto.ProblemDetail"
                         }
                     },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ProblemDetail"
+                        }
+                    },
                     "404": {
                         "description": "Not Found",
                         "schema": {
@@ -350,6 +380,12 @@ const docTemplate = `{
                     },
                     "400": {
                         "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ProblemDetail"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
                         "schema": {
                             "$ref": "#/definitions/dto.ProblemDetail"
                         }
