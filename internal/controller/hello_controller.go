@@ -46,6 +46,7 @@ func NewHelloController(service service.HelloService,
 // @Security BearerAuth
 // @Success 200 {object} dto.GreetingResponse
 // @Failure 401 {object} dto.ProblemDetail
+// @Failure 403 {object} dto.ProblemDetail
 // @Failure 500 {object} dto.ProblemDetail
 // @Router /api/hello [get]
 func (h *helloControllerImpl) Hello(c *gin.Context) {

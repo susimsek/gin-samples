@@ -107,6 +107,12 @@ const docTemplate = `{
                             "$ref": "#/definitions/dto.ProblemDetail"
                         }
                     },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ProblemDetail"
+                        }
+                    },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {

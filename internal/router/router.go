@@ -19,15 +19,17 @@ func SetupRouter(helloController controller.HelloController,
 	r := gin.Default()
 	r.StaticFile("/favicon.ico", "./resources/favicons/favicon.ico")
 	r.Use(middleware.ErrorHandlingMiddleware(trans))
-	privateGroup := SetupPrivateRoutes(r, tokenGenerator)
+	authenticatedGroup, adminGroup := SetupPrivateRoutes(r, tokenGenerator)
 	// Add Hello routes
-	AddHelloRoutes(privateGroup, helloController)
+	AddHelloRoutes(authenticatedGroup, helloController)
 
 	// Add Health routes
 	AddHealthRoutes(r, healthController)
 
 	// Add Authentication routes
 	AddAuthRoutes(r, authController)
+
+	AddAdminRoutes(adminGroup, helloController)
 
 	// Swagger route
 	r.GET("/swagger-ui/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
