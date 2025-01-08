@@ -6,8 +6,19 @@ import (
 	"path/filepath"
 )
 
-// InitJwtKeyPair initializes the RSA key pair for JWT
-func InitJwtKeyPair() *util.RSAKeyPair {
+// TokenInitializer interface for initializing JWT Key Pair
+type TokenInitializer interface {
+	InitJwtKeyPair() *util.RSAKeyPair
+}
+
+// RealTokenConfig is the production implementation
+type RealTokenConfig struct{}
+
+// TokenConfig is the default implementation for production
+var TokenConfig TokenInitializer = &RealTokenConfig{}
+
+// InitJwtKeyPair for RealTokenConfig loads RSA key pair from files
+func (r *RealTokenConfig) InitJwtKeyPair() *util.RSAKeyPair {
 	privateKeyPath := filepath.Join("resources", "keys", "private_key.pem")
 	publicKeyPath := filepath.Join("resources", "keys", "public_key.pem")
 
@@ -16,5 +27,6 @@ func InitJwtKeyPair() *util.RSAKeyPair {
 		log.Fatalf("Failed to load RSA key pair: %v", err)
 	}
 
+	log.Println("RSA Key Pair loaded successfully!")
 	return jwtKeyPair
 }

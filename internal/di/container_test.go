@@ -2,17 +2,19 @@ package di_test
 
 import (
 	"gin-samples/config"
-	"gin-samples/internal/mock"
-	"testing"
-
 	"gin-samples/internal/di"
+	"gin-samples/internal/mock"
 	"github.com/stretchr/testify/assert"
+	"testing"
 )
 
 func TestNewContainer(t *testing.T) {
 	// Create a new container
+	mockConfig := mock.MockConfig()
 	config.DatabaseConfig = &mock.MockDatabaseConfig{}
-	container := di.NewContainer()
+	config.TokenConfig = &mock.MockTokenConfig{}
+
+	container := di.NewContainer(mockConfig)
 
 	// Ensure the container is not nil
 	assert.NotNil(t, container, "Container should not be nil")

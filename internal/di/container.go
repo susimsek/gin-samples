@@ -45,7 +45,9 @@ func NewContainer(cfg *config.Config) *Container {
 	// Mapper
 	helloMapper := mapper.NewHelloMapper()
 
-	jwtKeyPair := config.InitJwtKeyPair()
+	// JWT KeyPair
+	jwtKeyPair := config.TokenConfig.InitJwtKeyPair()
+
 	// Token Generator
 	tokenGenerator := security.NewTokenGenerator(jwtKeyPair, cfg.TokenDuration)
 
