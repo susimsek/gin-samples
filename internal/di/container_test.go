@@ -12,7 +12,7 @@ func TestNewContainer(t *testing.T) {
 	// Create a new container
 	mockConfig := mock.MockConfig()
 	config.DatabaseConfig = &mock.MockDatabaseConfig{}
-	config.TokenConfig = &mock.MockTokenConfig{}
+	config.JweTokenConfig = &mock.MockJweTokenConfig{}
 
 	container := di.NewContainer(mockConfig)
 

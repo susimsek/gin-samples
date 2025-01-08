@@ -6,27 +6,39 @@ import (
 	"path/filepath"
 )
 
-// TokenInitializer interface for initializing JWT Key Pair
-type TokenInitializer interface {
-	InitJwtKeyPair() *util.RSAKeyPair
+// JweTokenInitializer interface for initializing JWE Key Pairs
+type JweTokenInitializer interface {
+	InitJweKeyPair() (*util.RSAKeyPair, *util.RSAKeyPair)
 }
 
-// RealTokenConfig is the production implementation
-type RealTokenConfig struct{}
+// RealJweTokenConfig is the production implementation
+type RealJweTokenConfig struct{}
 
-// TokenConfig is the default implementation for production
-var TokenConfig TokenInitializer = &RealTokenConfig{}
+// JweTokenConfig is the default implementation for production
+var JweTokenConfig JweTokenInitializer = &RealJweTokenConfig{}
 
-// InitJwtKeyPair for RealTokenConfig loads RSA key pair from files
-func (r *RealTokenConfig) InitJwtKeyPair() *util.RSAKeyPair {
-	privateKeyPath := filepath.Join("resources", "keys", "private_key.pem")
-	publicKeyPath := filepath.Join("resources", "keys", "public_key.pem")
+// InitJweKeyPair loads RSA key pairs for signing and encryption from files
+func (r *RealJweTokenConfig) InitJweKeyPair() (*util.RSAKeyPair, *util.RSAKeyPair) {
+	// Paths for signing keys
+	signPrivateKeyPath := filepath.Join("resources", "keys", "sign", "private_key.pem")
+	signPublicKeyPath := filepath.Join("resources", "keys", "sign", "public_key.pem")
 
-	jwtKeyPair, err := util.LoadRSAKeyPair(privateKeyPath, publicKeyPath)
+	// Paths for encryption keys
+	encPrivateKeyPath := filepath.Join("resources", "keys", "enc", "private_key.pem")
+	encPublicKeyPath := filepath.Join("resources", "keys", "enc", "public_key.pem")
+
+	// Load signing key pair
+	signKeyPair, err := util.LoadRSAKeyPair(signPrivateKeyPath, signPublicKeyPath)
 	if err != nil {
-		log.Fatalf("Failed to load RSA key pair: %v", err)
+		log.Fatalf("Failed to load signing RSA key pair: %v", err)
 	}
 
-	log.Println("RSA Key Pair loaded successfully!")
-	return jwtKeyPair
+	// Load encryption key pair
+	encKeyPair, err := util.LoadRSAKeyPair(encPrivateKeyPath, encPublicKeyPath)
+	if err != nil {
+		log.Fatalf("Failed to load encryption RSA key pair: %v", err)
+	}
+
+	log.Println("JWE Key Pairs loaded successfully!")
+	return signKeyPair, encKeyPair
 }

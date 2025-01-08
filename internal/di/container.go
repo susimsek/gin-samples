@@ -46,10 +46,11 @@ func NewContainer(cfg *config.Config) *Container {
 	helloMapper := mapper.NewHelloMapper()
 
 	// JWT KeyPair
-	jwtKeyPair := config.TokenConfig.InitJwtKeyPair()
+	signKeyPair, encKeyPair := config.JweTokenConfig.InitJweKeyPair()
 
 	// Token Generator
-	tokenGenerator := security.NewTokenGenerator(jwtKeyPair, cfg.TokenDuration)
+	tokenGenerator := security.NewTokenGenerator(
+		signKeyPair, encKeyPair, cfg.TokenDuration)
 
 	// Services
 	helloService := service.NewHelloService(helloRepository, helloMapper, clock)
