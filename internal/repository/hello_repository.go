@@ -1,6 +1,7 @@
 package repository
 
 import (
+	"gin-samples/internal/cache"
 	"gin-samples/internal/domain"
 	"gorm.io/gorm"
 )
@@ -13,12 +14,16 @@ type HelloRepository interface {
 
 type helloRepositoryImpl struct {
 	*BaseRepository[domain.Greeting, uint]
+	cacheManager *cache.CacheManager
 }
 
 // NewHelloRepository creates a new instance of HelloRepository
-func NewHelloRepository(db *gorm.DB) HelloRepository {
+func NewHelloRepository(db *gorm.DB, cacheManager *cache.CacheManager) HelloRepository {
 	return &helloRepositoryImpl{
-		BaseRepository: NewBaseRepository[domain.Greeting, uint](db),
+		BaseRepository: NewBaseRepository[domain.Greeting, uint](db,
+			cacheManager,
+			"greeting"),
+		cacheManager: cacheManager,
 	}
 }
 

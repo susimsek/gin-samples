@@ -2,6 +2,7 @@ package di
 
 import (
 	"gin-samples/config"
+	customCache "gin-samples/internal/cache"
 	"gin-samples/internal/controller"
 	"gin-samples/internal/mapper"
 	"gin-samples/internal/repository"
@@ -9,6 +10,7 @@ import (
 	"gin-samples/internal/security"
 	"gin-samples/internal/service"
 	"gin-samples/internal/util"
+	"github.com/dgraph-io/ristretto"
 	"github.com/gin-gonic/gin"
 	"github.com/go-playground/universal-translator"
 	"github.com/go-playground/validator/v10"
@@ -17,6 +19,7 @@ import (
 
 type Container struct {
 	Config                *config.Config
+	Cache                 *ristretto.Cache
 	DB                    *gorm.DB
 	HelloRepository       repository.HelloRepository
 	UserRepository        repository.UserRepository
@@ -34,10 +37,14 @@ type Container struct {
 }
 
 func NewContainer(cfg *config.Config) *Container {
+	// Initialize CacheConfig
+	cache := config.InitCache()
+
+	cacheManager := customCache.NewCacheManager(cache)
 	// Repository
 	db := config.DatabaseConfig.InitDB()
-	helloRepository := repository.NewHelloRepository(db)
-	userRepository := repository.NewUserRepository(db)
+	helloRepository := repository.NewHelloRepository(db, cacheManager)
+	userRepository := repository.NewUserRepository(db, cacheManager)
 
 	// Clock
 	clock := &util.RealClock{} // Use RealClock for production
@@ -70,6 +77,7 @@ func NewContainer(cfg *config.Config) *Container {
 
 	return &Container{
 		Config:                cfg,
+		Cache:                 cache,
 		DB:                    db,
 		HelloRepository:       helloRepository,
 		UserRepository:        userRepository,

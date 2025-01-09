@@ -10,3 +10,7 @@ type Greeting struct {
 func (Greeting) TableName() string {
 	return "greeting"
 }
+
+func (g Greeting) GetID() interface{} {
+	return g.ID
+}

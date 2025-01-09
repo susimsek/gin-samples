@@ -17,3 +17,7 @@ type User struct {
 func (User) TableName() string {
 	return "user_identity"
 }
+
+func (u User) GetID() interface{} {
+	return u.ID
+}
