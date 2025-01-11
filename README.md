@@ -12,6 +12,7 @@ Explore high performance, easy-to-use routing, and flexible middleware with Gin.
 ## 🚀 Quick Links
 
 - 📖 [Features](#-features)
+- 🔒 [Authentication](#-authentication)
 - 🧑‍💻 [Development Setup](#-development-setup)
 - 🔄 [Live Reload](#-live-reload)
 - 🧪 [Testing](#-testing)
@@ -28,6 +29,48 @@ Explore high performance, easy-to-use routing, and flexible middleware with Gin.
 - 🌐 **Simple Routing**: Define routes with minimal code.
 - 🔌 **Middleware Support**: Easily add middleware to your application.
 - 🤪 **Extensible**: Add your own routes and features.
+
+## 🔒 Authentication
+
+This project implements **JWE (JSON Web Encryption)** for secure authentication and authorization. Below are predefined users and the process for authenticating and using JWE tokens:
+
+### 📋 Predefined Users
+
+| **Username** | **Email**           | **Password** | **Roles** |
+|--------------|---------------------|--------------|-----------|
+| user         | user@example.com    | password     | USER      |
+| admin        | admin@example.com   | password     | ADMIN     |
+
+### 🔑 How to Authenticate
+
+1. **Login Endpoint:**
+  - Send a POST request to the `/api/auth/login` endpoint with the user's credentials in the request body.
+  - Example payload:
+    ```json
+    {
+      "email": "user@example.com",
+      "password": "password"
+    }
+    ```
+
+2. **Successful Response:**
+  - Upon successful login, the server responds with a JWE token token and related information. Example response:
+    ```json
+    {
+      "accessToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+      "accessTokenExpiresIn": 3600,
+      "tokenType": "Bearer"
+    }
+    ```
+
+3. **Using the Token:**
+  - Include the received token in the `Authorization` header of subsequent requests:
+    ```
+    Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+    ```
+
+4. **Access Protected Endpoints:**
+  - Use the token to access protected endpoints such as `/api/hello`.
 
 ## 🧑‍💻 Development Setup
 
